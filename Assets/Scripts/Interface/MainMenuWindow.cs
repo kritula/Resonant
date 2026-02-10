@@ -31,7 +31,8 @@ namespace OmniumLessons
 
         private void StartGameHandler()
         {
-            GameManager.Instance.StartGame();
+            GameManager.Instance.StartNewSession();
+
             GameManager.Instance.WindowsService.ShowWindow<GameplayWindow>(false);
             Hide(true);
         }

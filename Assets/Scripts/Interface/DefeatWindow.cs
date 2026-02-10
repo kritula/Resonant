@@ -18,14 +18,18 @@ namespace OmniumLessons
         private void OnReturnToMainMenuButtonClicked()
         {
             Hide(true);
+
+            GameManager.Instance.WindowsService.HideWindow<GameplayWindow>(true);
             GameManager.Instance.WindowsService.ShowWindow<MainMenuWindow>(false);
         }
 
         private void OnRestartButtonClicked()
         {
-            Hide(true);
-            GameManager.Instance.WindowsService.ShowWindow<GameplayWindow>(false);
-            GameManager.Instance.StartGame();
+            GameManager.Instance.StartNewSession();
+
+            // UI-логика здесь:
+            Hide(true); 
+            GameManager.Instance.WindowsService.ShowWindow<GameplayWindow>(true);
         }
     }
 }

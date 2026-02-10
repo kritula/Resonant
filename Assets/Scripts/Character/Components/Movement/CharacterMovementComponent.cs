@@ -19,7 +19,6 @@ namespace OmniumLessons
 			}
 		}
 
-		// Мы создаем этот метод для инициализации экземпляра класса, чтобы передать ему нужные данные.
 		public void Initialize(CharacterData characterData)
 		{
 			this.characterData = characterData;

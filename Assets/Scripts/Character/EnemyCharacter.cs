@@ -28,13 +28,13 @@ namespace OmniumLessons
             switch (_aiState)
             {
                 case AiState.None:
-                    return;
+                    break;
                 case AiState.MoveToTarget:
                     Move();
-                    return;
+                    break;
                 case AiState.Attack:
                     Attack();
-                    return;
+                    break;
             }
 
             AttackComponent.OnUpdate();

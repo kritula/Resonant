@@ -61,6 +61,13 @@ namespace OmniumLessons
             player.gameObject.SetActive(true);
             RegisterCharacter(player);
 
+            // привязываем камеру к игроку
+            var cameraFollow = Camera.main.GetComponent<CameraFollow>();
+            if (cameraFollow != null)
+            {
+                cameraFollow.SetTarget(player.transform);
+            }
+
             _gameTimeSec = 0f;
             ScoreManager.StartGame();
 
@@ -117,7 +124,37 @@ namespace OmniumLessons
             // отписка
             deathCharacter.LiveComponent.OnCharacterDeath -= OnCharacterDeathHandler;
         }
-        
+
+        public void ClearSession()
+        {
+            // UI/анимации и кнопки должны работать
+            Time.timeScale = 1f;
+
+            // Останавливаем матч
+            _isGameActive = false;
+            IsGamePaused = true;
+
+            // Остановить спавн 
+            if (_spawnController != null)
+                _spawnController.StopSpawn();
+
+            // Сброс таймера
+            _gameTimeSec = 0f;
+
+            // Сброс очков текущей сессии (не глобальных)
+            ScoreManager.StartGame();
+
+            // Убрать всех персонажей
+            CharacterFactory.ClearAll();
+        }
+
+        public void StartNewSession()
+        {
+            ClearSession();
+            StartGame();
+        }
+
+
         private void GameOver()
         {
             Debug.Log("GameOver!");

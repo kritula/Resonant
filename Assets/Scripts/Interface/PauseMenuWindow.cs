@@ -42,8 +42,7 @@ namespace OmniumLessons
 
         private void OnExitToMainMenuClicked()
         {
-            Time.timeScale = 1f;
-            GameManager.Instance.IsGamePaused = true;
+            GameManager.Instance.ClearSession();
 
             Hide(true);
             GameManager.Instance.WindowsService.HideWindow<GameplayWindow>(true);

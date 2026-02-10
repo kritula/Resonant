@@ -77,5 +77,32 @@ namespace OmniumLessons
 
             return characterObject;
         }
+
+        public void ClearAll()
+        {
+            // Убираем всех активных персонажей (игрока и врагов) в пул и выключаем их
+            for (int i = _activeCharactersPool.Count - 1; i >= 0; i--)
+            {
+                Character character = _activeCharactersPool[i];
+                if (character == null)
+                {
+                    _activeCharactersPool.RemoveAt(i);
+                    continue;
+                }
+
+                var type = character.CharacterType;
+
+                // гарантируем, что очередь под тип существует
+                if (!_disabledCharactersPool.ContainsKey(type))
+                    _disabledCharactersPool.Add(type, new Queue<Character>());
+
+                _activeCharactersPool.RemoveAt(i);
+                _disabledCharactersPool[type].Enqueue(character);
+                character.gameObject.SetActive(false);
+            }
+
+            Player = null;
+        }
+
     }
 }
