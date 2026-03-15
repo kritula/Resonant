@@ -4,17 +4,19 @@ namespace OmniumLessons
 {
     public class CharacterAttackComponent : IAttackComponent
     {
-        private readonly int _lockDamageTimeMax = 1;
+        private float _lockDamageTimeMax;
+
         private float _lockDamageTime = 0;
 
         private CharacterData _characterData;
-        
-        public int Damage => 5;
+
+        public int Damage => _characterData.WeaponData.Damage;
 
 
         public void Initialize(CharacterData characterData)
         {
             _characterData = characterData;
+            _lockDamageTimeMax = _characterData.WeaponData.AttackCooldown;
         }
         
         public void MakeDamage(Character damageTarget) 

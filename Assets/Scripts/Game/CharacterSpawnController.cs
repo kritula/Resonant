@@ -1,22 +1,36 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace OmniumLessons
 {
+    [Serializable]
+    public class EnemySpawnSettings
+    {
+        public CharacterType CharacterType;
+        public float SpawnStartTime;
+    }
+
     public class CharacterSpawnController
     {
         private CharacterFactory CharacterFactory => GameManager.Instance.CharacterFactory;
         private GameData GameData => GameManager.Instance.GameData;
 
-        //внутринние счетчики
         private float _spawnTimerEnemy;
 
-        //параметры роста спавна
         private int _baseMaxEnemies = 2;
         private int _enemiesAddedPerStep = 1;
-
-        private float _enemyGrowthIntervalSeconds = 10f; // <-- рост лимита каждые 10 сек
+        private float _enemyGrowthIntervalSeconds = 10f;
 
         private bool _isActiveSpawn;
+
+        private List<EnemySpawnSettings> _enemySpawnSettings = new List<EnemySpawnSettings>
+        {
+            new EnemySpawnSettings { CharacterType = CharacterType.DefaultEnemy, SpawnStartTime = 0f },
+            new EnemySpawnSettings { CharacterType = CharacterType.FastEnemy, SpawnStartTime = 15f },
+            new EnemySpawnSettings { CharacterType = CharacterType.TankEnemy, SpawnStartTime = 30f }
+        };
 
         public void StartSpawn()
         {
@@ -35,37 +49,34 @@ namespace OmniumLessons
                 return;
 
             _spawnTimerEnemy += deltaTime;
-            float gameTime = GameManager.Instance.GameTime;
-            // считаем, сколько раз вырос лимит
-            int growthSteps = (int)(gameTime / _enemyGrowthIntervalSeconds);
 
-            // считаем текущий максимум врагов
+            float gameTime = GameManager.Instance.GameTime;
+            int growthSteps = (int)(gameTime / _enemyGrowthIntervalSeconds);
             int maxEnemiesNow = _baseMaxEnemies + growthSteps * _enemiesAddedPerStep;
 
-            // Считаем, сколько врагов УЖЕ есть
             int currentEnemies = CountActiveEnemies();
-
-            // Если врагов уже достаточно — не спавним
             if (currentEnemies >= maxEnemiesNow)
                 return;
 
-            // Проверяем, прошло ли достаточно времени для нового врага
             if (_spawnTimerEnemy >= GameData.TimeBetweenEnemySpawn)
             {
                 SpawnEnemy();
-                _spawnTimerEnemy = 0f;  // сбрасываем таймер
+                _spawnTimerEnemy = 0f;
             }
         }
 
         private int CountActiveEnemies()
         {
             int count = 0;
-            var active = CharacterFactory.ActiveCharacters;
+            var activeCharacters = CharacterFactory.ActiveCharacters;
 
-            for (int i = 0; i < active.Count; i++)
+            for (int i = 0; i < activeCharacters.Count; i++)
             {
-                if (active[i].CharacterType == CharacterType.DefaultEnemy && active[i].LiveComponent.IsAlive)
+                if (activeCharacters[i].CharacterType != CharacterType.DefaultPlayer &&
+                    activeCharacters[i].LiveComponent.IsAlive)
+                {
                     count++;
+                }
             }
 
             return count;
@@ -73,26 +84,42 @@ namespace OmniumLessons
 
         private void SpawnEnemy()
         {
-            Character enemy = CharacterFactory.CreateCharacter(CharacterType.DefaultEnemy);
+            CharacterType enemyType = GetEnemyTypeForSpawn();
+            Character enemy = CharacterFactory.CreateCharacter(enemyType);
 
             float posX = CharacterFactory.Player.transform.position.x + GetOffset();
             float posZ = CharacterFactory.Player.transform.position.z + GetOffset();
+
             Vector3 spawnPoint = new Vector3(posX, 0, posZ);
             enemy.transform.position = spawnPoint;
 
             GameManager.Instance.RegisterCharacter(enemy);
             enemy.gameObject.SetActive(true);
+        }
 
+        private CharacterType GetEnemyTypeForSpawn()
+        {
+            float gameTime = GameManager.Instance.GameTime;
+            List<CharacterType> availableEnemies = new List<CharacterType>();
 
-            float GetOffset()
+            for (int i = 0; i < _enemySpawnSettings.Count; i++)
             {
-                bool isPlus = Random.value > 0.5f;
-                float randomOffset = Random.Range(GameData.MinEnemySpawnOffset, GameData.MaxEnemySpawnOffset);
-
-                return isPlus
-                    ? randomOffset
-                    : -randomOffset;
+                if (gameTime >= _enemySpawnSettings[i].SpawnStartTime)
+                {
+                    availableEnemies.Add(_enemySpawnSettings[i].CharacterType);
+                }
             }
+
+            int randomIndex = Random.Range(0, availableEnemies.Count);
+            return availableEnemies[randomIndex];
+        }
+
+        private float GetOffset()
+        {
+            bool isPlus = Random.value > 0.5f;
+            float randomOffset = Random.Range(GameData.MinEnemySpawnOffset, GameData.MaxEnemySpawnOffset);
+
+            return isPlus ? randomOffset : -randomOffset;
         }
     }
 }

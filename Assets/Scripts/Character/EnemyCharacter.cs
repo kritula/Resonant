@@ -16,9 +16,9 @@ namespace OmniumLessons
             }
             
             base.Initialize();
-            
-            LiveComponent = new EnemyLiveComponent(this);
-            
+
+            LiveComponent = new CharacterLiveComponent(this);
+
             AttackComponent = new CharacterAttackComponent();
             AttackComponent.Initialize(_characterData);
         }

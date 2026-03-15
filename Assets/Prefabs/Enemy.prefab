@@ -183,6 +183,8 @@ MonoBehaviour:
   _defaultSpeed: 3
   _characterTransform: {fileID: 3007017196735004018}
   _characterController: {fileID: 4122229871219812238}
+  _weaponData: {fileID: 11400000, guid: 7d5355c51bb553f4db8578f4a86d8709, type: 2}
+  _maxHealth: 10
 --- !u!114 &4306836609690404402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,6 +197,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfd10af07c399cc49b6a3c82433916ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterType: 2
   _characterData: {fileID: 5031701178941038261}
+  _characterType: 2
   _aiState: 1

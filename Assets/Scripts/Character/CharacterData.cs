@@ -10,10 +10,14 @@ namespace OmniumLessons
         [SerializeField] private float _defaultSpeed;
         [SerializeField] private Transform _characterTransform;
         [SerializeField] private CharacterController _characterController;
+        [SerializeField] private WeaponData _weaponData;
+        [SerializeField] private int _maxHealth;
 
         public int ScoreCost => _scoreCost;
         public float DefaultSpeed => _defaultSpeed;
         public Transform CharacterTransform => _characterTransform;
         public CharacterController CharacterController => _characterController;
+        public WeaponData WeaponData => _weaponData;
+        public int MaxHealth => _maxHealth;
     }
 }

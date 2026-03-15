@@ -40,9 +40,9 @@ namespace OmniumLessons
             }
 
             base.Initialize();
-            
-            LiveComponent = new PlayerLiveComponent(this);
-            
+
+            LiveComponent = new CharacterLiveComponent(this);
+
             AttackComponent = new CharacterAttackComponent();
             AttackComponent.Initialize(_characterData);
         }
@@ -69,9 +69,13 @@ namespace OmniumLessons
                 Vector3 directionToTarget = CharacterTarget.transform.position - transform.position;
                 directionToTarget.Normalize();
                 MovableComponent.Rotation(directionToTarget);
-        
-                if (Input.GetButtonDown("Jump"))
+
+                float distance = Vector3.Distance(transform.position, CharacterTarget.transform.position);
+
+                if (distance <= _characterData.WeaponData.AttackDistance)
+                {
                     AttackComponent.MakeDamage(CharacterTarget);
+                }
             }
             
             AttackComponent.OnUpdate();

@@ -5355,6 +5355,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerCharacterPrefab: {fileID: 2587082133646911151, guid: 7707b764734a23e46b384e33e2fd18cd, type: 3}
   _enemyCharacterPrefab: {fileID: 4306836609690404402, guid: 823f7c4d58f0b914d83e32849df1d521, type: 3}
+  _fastEnemyCharacterPrefab: {fileID: 0}
+  _tankEnemyCharacterPrefab: {fileID: 0}
 --- !u!1 &966163593
 GameObject:
   m_ObjectHideFlags: 0

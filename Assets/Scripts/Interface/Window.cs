@@ -47,7 +47,8 @@ namespace OmniumLessons
         public void Hide(bool isImmediately)
         {
             CloseStart();
-            WindowAnimator.Play(isImmediately ? hiddenAnimationName : closeAnimationName);
+            if (gameObject.activeInHierarchy)
+                WindowAnimator.Play(isImmediately ? hiddenAnimationName : closeAnimationName);
 
             if (isImmediately)
                 CloseEnd();

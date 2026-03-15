@@ -8,6 +8,8 @@ namespace OmniumLessons
     {
         [SerializeField] private Character _playerCharacterPrefab;
         [SerializeField] private Character _enemyCharacterPrefab;
+        [SerializeField] private Character _fastEnemyCharacterPrefab;
+        [SerializeField] private Character _tankEnemyCharacterPrefab;
         
         private Dictionary<CharacterType, Queue<Character>> _disabledCharactersPool = new Dictionary<CharacterType, Queue<Character>>();
         
@@ -69,6 +71,12 @@ namespace OmniumLessons
                     break;
                 case CharacterType.DefaultEnemy:
                     characterObject = GameObject.Instantiate(_enemyCharacterPrefab, null);
+                    break;
+                case CharacterType.FastEnemy:
+                    characterObject = GameObject.Instantiate(_fastEnemyCharacterPrefab, null);
+                    break;
+                case CharacterType.TankEnemy:
+                    characterObject = GameObject.Instantiate(_tankEnemyCharacterPrefab, null);
                     break;
                 default:
                     Debug.LogError("Unknown character type: " + characterType);
