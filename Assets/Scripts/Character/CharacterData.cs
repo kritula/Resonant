@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace OmniumLessons
@@ -12,6 +10,7 @@ namespace OmniumLessons
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private WeaponData _weaponData;
         [SerializeField] private int _maxHealth;
+        [SerializeField] private int _experienceReward;
 
         public int ScoreCost => _scoreCost;
         public float DefaultSpeed => _defaultSpeed;
@@ -19,5 +18,6 @@ namespace OmniumLessons
         public CharacterController CharacterController => _characterController;
         public WeaponData WeaponData => _weaponData;
         public int MaxHealth => _maxHealth;
+        public int ExperienceReward => _experienceReward;
     }
 }

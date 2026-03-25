@@ -184,6 +184,7 @@ MonoBehaviour:
   _characterController: {fileID: 8112031080680725225}
   _weaponData: {fileID: 11400000, guid: 9d0db534d534c3b45b07d7f4ff830db1, type: 2}
   _maxHealth: 5
+  _experienceReward: 35
 --- !u!114 &4569272487351501318
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace OmniumLessons
@@ -7,10 +8,15 @@ namespace OmniumLessons
         [SerializeField] private CharacterFactory _characterFactory;
         [SerializeField] private GameData _gameData;
         [SerializeField] private WindowsService _windowsService;
+        [SerializeField] private AbilityDatabase _abilityDatabase;
 
         private bool _isGameActive = false;
         private  float _gameTimeSec = 0;
-        
+
+        private CharacterSpawnController _spawnController;
+
+        private AbilitySelectionService _abilitySelectionService;
+
         public static GameManager Instance { get; private set; }
         
         public ScoreManager ScoreManager { get; private set; }
@@ -18,8 +24,10 @@ namespace OmniumLessons
         public CharacterFactory CharacterFactory => _characterFactory;
         public GameData GameData => _gameData;
         public float GameTime => _gameTimeSec;
+        public ExperienceManager ExperienceManager { get; private set; }
 
-        private CharacterSpawnController _spawnController;
+        
+
 
         // Добавим концептуально еще понятие "игра на паузе", в отличие от нашего урока. В целом, ничего не поменяется, но сам контроль над игрой станет более гибким.
         public bool IsGamePaused
@@ -45,7 +53,11 @@ namespace OmniumLessons
         private void Initialize()
         {
             ScoreManager = new ScoreManager();
+            ExperienceManager = new ExperienceManager();
+            _abilitySelectionService = new AbilitySelectionService(_abilityDatabase);
             _windowsService.Initialize();
+
+            ExperienceManager.OnLevelChanged += OnLevelUp;
         }
 
         public void StartGame()
@@ -113,9 +125,14 @@ namespace OmniumLessons
                     GameOver();
                     break;
                 case CharacterType.DefaultEnemy:
+                case CharacterType.FastEnemy:
+                case CharacterType.TankEnemy:
                     ScoreManager.AddScore(deathCharacter.CharacterData.ScoreCost);
                     Debug.Log("Score = " + ScoreManager.GameScore);
+                    ExperienceManager.AddExperience(deathCharacter.CharacterData.ExperienceReward);
+                    Debug.Log("Exp = " + ExperienceManager.CurrentExperience);
                     break;
+
             }
         
             CharacterFactory.ReturnCharacterToPool(deathCharacter);
@@ -143,6 +160,8 @@ namespace OmniumLessons
 
             // Сброс очков текущей сессии (не глобальных)
             ScoreManager.StartGame();
+
+            ExperienceManager.StartGame();
 
             // Убрать всех персонажей
             CharacterFactory.ClearAll();
@@ -179,6 +198,19 @@ namespace OmniumLessons
             // останавливаем спавн
             _spawnController.StopSpawn();
             WindowsService.ShowWindow<VictoryWindow>(false);
+        }
+
+        private void OnLevelUp(int level)
+        {
+            IsGamePaused = true;
+            Time.timeScale = 0f;
+
+            List<AbilityData> abilities = _abilitySelectionService.GetRandomAbilities(3);
+
+            SkillsWindow skillsWindow = WindowsService.GetWindow<SkillsWindow>();
+            skillsWindow.ShowAbilities(abilities);
+
+            WindowsService.ShowWindow<SkillsWindow>(true);
         }
     }
 }

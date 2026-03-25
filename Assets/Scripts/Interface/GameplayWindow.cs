@@ -14,7 +14,7 @@ namespace OmniumLessons
         [Space][SerializeField] private TMP_Text timerText;
         [SerializeField] private TMP_Text scoreText;
         [SerializeField] private Button pauseButton;
-
+        [SerializeField] private TMP_Text levelText;
         protected override void OpenStart()
         {
             base.OpenStart();
@@ -25,6 +25,10 @@ namespace OmniumLessons
 
             ScoreChangeHandler(GameManager.Instance.ScoreManager.GameScore);
             GameManager.Instance.ScoreManager.OnScoreChanged += ScoreChangeHandler;
+            GameManager.Instance.ExperienceManager.OnExperienceChanged += UpdateExperience;
+
+            GameManager.Instance.ExperienceManager.OnLevelChanged += UpdateLevel;
+            UpdateLevel(GameManager.Instance.ExperienceManager.CurrentLevel);
 
             pauseButton.onClick.AddListener(OnPauseClicked);
 
@@ -36,6 +40,8 @@ namespace OmniumLessons
             base.CloseStart();
 
             GameManager.Instance.ScoreManager.OnScoreChanged -= ScoreChangeHandler;
+            GameManager.Instance.ExperienceManager.OnExperienceChanged -= UpdateExperience;
+            GameManager.Instance.ExperienceManager.OnLevelChanged -= UpdateLevel;
 
             var player = GameManager.Instance.CharacterFactory.Player;
             if (player == null)
@@ -74,10 +80,15 @@ namespace OmniumLessons
             }
         }
 
-        private void UpdateExperience(int value, int maxValue)
+        private void UpdateExperience(int currentXP, int xpToNextLevel)
         {
-            experienceSlider.maxValue = maxValue;
-            experienceSlider.value = value;
+            experienceSlider.maxValue = xpToNextLevel;
+            experienceSlider.value = currentXP;
+        }
+
+        private void UpdateLevel(int level)
+        {
+            levelText.text = $"Level {level}";
         }
 
         private void OnPauseClicked()

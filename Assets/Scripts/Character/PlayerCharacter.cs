@@ -4,7 +4,8 @@ namespace OmniumLessons
 {
     public class PlayerCharacter : Character
     {
-        // игрок будет определять ближайшего противника как ближайшую цель для взаимодействия: атаки, поворота и т.д.
+        public AbilityManager AbilityManager { get; private set; }
+        
         public override Character CharacterTarget
         {
             get
@@ -45,6 +46,8 @@ namespace OmniumLessons
 
             AttackComponent = new CharacterAttackComponent();
             AttackComponent.Initialize(_characterData);
+
+            AbilityManager = new AbilityManager(this);
         }
         
         public override void Update()
@@ -79,6 +82,7 @@ namespace OmniumLessons
             }
             
             AttackComponent.OnUpdate();
+            AbilityManager?.OnUpdate();
         }
     }
 }

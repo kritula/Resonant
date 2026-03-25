@@ -7,7 +7,7 @@ namespace OmniumLessons
     {
         [SerializeField] private Button continueButton;
         [SerializeField] private Button optionsMenuButton;
-        [SerializeField] private Button skillsButton;
+        //[SerializeField] private Button skillsButton;
         [SerializeField] private Button exitMainMenuButton;
 
 
@@ -16,7 +16,7 @@ namespace OmniumLessons
         {
             continueButton.onClick.AddListener(OnContinueClicked);
             optionsMenuButton.onClick.AddListener(OnOptionsClicked);
-            skillsButton.onClick.AddListener(OnSkillsClicked);
+            //skillsButton.onClick.AddListener(OnSkillsClicked);
             exitMainMenuButton.onClick.AddListener(OnExitToMainMenuClicked);
         }
 
@@ -34,11 +34,11 @@ namespace OmniumLessons
         }
 
 
-        private void OnSkillsClicked()
-        {
-            Hide(true);
-            GameManager.Instance.WindowsService.ShowWindow<SkillsWindow>(false);
-        }
+        //private void OnSkillsClicked()
+        //{
+        //    Hide(true);
+        //    GameManager.Instance.WindowsService.ShowWindow<SkillsWindow>(false);
+        //}
 
         private void OnExitToMainMenuClicked()
         {
