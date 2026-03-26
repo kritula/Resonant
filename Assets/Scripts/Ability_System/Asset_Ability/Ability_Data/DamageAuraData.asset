@@ -16,4 +16,4 @@ MonoBehaviour:
   _description: Damage Aura
   _icon: {fileID: 0}
   _cooldown: 1
-  _abilityPrefab: {fileID: 1677113911225452047, guid: a86633ce3f12b934f8a3463255a4a3c6, type: 3}
+  _abilityPrefab: {fileID: 669650039028011676, guid: 11ed468552c135f418fad70736654eb5, type: 3}

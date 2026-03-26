@@ -5,7 +5,7 @@ namespace OmniumLessons
     public class PlayerCharacter : Character
     {
         public AbilityManager AbilityManager { get; private set; }
-        
+
         public override Character CharacterTarget
         {
             get
@@ -17,10 +17,10 @@ namespace OmniumLessons
                 {
                     if (activeCharacter.CharacterType == CharacterType.DefaultPlayer)
                         continue;
-                
+
                     if (!activeCharacter.LiveComponent.IsAlive)
                         continue;
-                
+
                     float distance = Vector3.Distance(activeCharacter.transform.position, transform.position);
                     if (distance < nearest)
                     {
@@ -32,7 +32,7 @@ namespace OmniumLessons
                 return target;
             }
         }
-        
+
         public override void Initialize()
         {
             if (_characterData == null)
@@ -49,20 +49,25 @@ namespace OmniumLessons
 
             AbilityManager = new AbilityManager(this);
         }
-        
+
+        public void ClearAbilities()
+        {
+            AbilityManager?.ClearAbilities();
+        }
+
         public override void Update()
         {
             if (!LiveComponent.IsAlive)
                 return;
-            
+
             float moveHorizontal = Input.GetAxis("Horizontal");
             float moveVertical = Input.GetAxis("Vertical");
-            
+
             Vector3 movementVector = new Vector3(moveHorizontal, 0.0f, moveVertical).normalized;
 
             MovableComponent.Move(movementVector);
             MovableComponent.Rotation(movementVector);
-            
+
             if (CharacterTarget == null)
             {
                 MovableComponent.Rotation(movementVector);
@@ -80,7 +85,7 @@ namespace OmniumLessons
                     AttackComponent.MakeDamage(CharacterTarget);
                 }
             }
-            
+
             AttackComponent.OnUpdate();
             AbilityManager?.OnUpdate();
         }

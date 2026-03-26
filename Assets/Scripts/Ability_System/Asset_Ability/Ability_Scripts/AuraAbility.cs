@@ -21,7 +21,7 @@ namespace OmniumLessons
             }
 
             _damageTimer = 0f;
-            transform.position = _owner.transform.position;
+            transform.localPosition = Vector3.zero;
         }
 
         public override void OnUpdate()
@@ -29,7 +29,6 @@ namespace OmniumLessons
             if (_owner == null)
                 return;
 
-            transform.position = _owner.transform.position;
 
             _damageTimer += Time.deltaTime;
 

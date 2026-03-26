@@ -36,9 +36,17 @@ namespace OmniumLessons
         
             return character;
         }
-        
+
         public void ReturnCharacterToPool(Character character)
         {
+            if (character == null)
+                return;
+
+            if (character is PlayerCharacter playerCharacter)
+            {
+                playerCharacter.ClearAbilities();
+            }
+
             _activeCharactersPool.Remove(character);
             var characterType = character.CharacterType;
             _disabledCharactersPool[characterType].Enqueue(character);
@@ -88,7 +96,6 @@ namespace OmniumLessons
 
         public void ClearAll()
         {
-            // Убираем всех активных персонажей (игрока и врагов) в пул и выключаем их
             for (int i = _activeCharactersPool.Count - 1; i >= 0; i--)
             {
                 Character character = _activeCharactersPool[i];
@@ -98,9 +105,13 @@ namespace OmniumLessons
                     continue;
                 }
 
+                if (character is PlayerCharacter playerCharacter)
+                {
+                    playerCharacter.ClearAbilities();
+                }
+
                 var type = character.CharacterType;
 
-                // гарантируем, что очередь под тип существует
                 if (!_disabledCharactersPool.ContainsKey(type))
                     _disabledCharactersPool.Add(type, new Queue<Character>());
 

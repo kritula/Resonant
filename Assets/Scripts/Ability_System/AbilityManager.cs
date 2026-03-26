@@ -27,20 +27,49 @@ namespace OmniumLessons
                 Debug.LogError($"AbilityPrefab is not assigned for {abilityData.name}");
                 return;
             }
-            GameObject abilityObject = GameObject.Instantiate(abilityData.AbilityPrefab);
+
+            GameObject abilityObject = GameObject.Instantiate(
+                abilityData.AbilityPrefab,
+                _owner.transform.position,
+                Quaternion.identity,
+                _owner.transform
+            );
+
             AbilityBehaviour ability = abilityObject.GetComponent<AbilityBehaviour>();
 
-            ability.Initialize(_owner, abilityData);
+            if (ability == null)
+            {
+                Debug.LogError($"AbilityBehaviour not found on prefab {abilityData.AbilityPrefab.name}");
+                GameObject.Destroy(abilityObject);
+                return;
+            }
 
+            ability.Initialize(_owner, abilityData);
             _abilities.Add(ability);
         }
+
         public void OnUpdate()
         {
             for (int i = 0; i < _abilities.Count; i++)
             {
                 if (_abilities[i] != null)
+                {
                     _abilities[i].OnUpdate();
+                }
             }
+        }
+
+        public void ClearAbilities()
+        {
+            for (int i = 0; i < _abilities.Count; i++)
+            {
+                if (_abilities[i] != null)
+                {
+                    GameObject.Destroy(_abilities[i].gameObject);
+                }
+            }
+
+            _abilities.Clear();
         }
     }
 }

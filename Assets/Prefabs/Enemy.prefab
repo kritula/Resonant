@@ -183,7 +183,7 @@ MonoBehaviour:
   _defaultSpeed: 3
   _characterTransform: {fileID: 3007017196735004018}
   _characterController: {fileID: 4122229871219812238}
-  _weaponData: {fileID: 11400000, guid: 7d5355c51bb553f4db8578f4a86d8709, type: 2}
+  _weaponData: {fileID: 11400000, guid: f6bd4825842a8e141b5fedd86f455556, type: 2}
   _maxHealth: 10
   _experienceReward: 60
 --- !u!114 &4306836609690404402
