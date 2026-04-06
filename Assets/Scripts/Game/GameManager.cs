@@ -11,52 +11,44 @@ namespace OmniumLessons
         [SerializeField] private UpgradeDatabase _abilityDatabase;
 
         private bool _isGameActive = false;
-        private  float _gameTimeSec = 0;
+        private float _gameTimeSec = 0f;
 
         private CharacterSpawnController _spawnController;
-
         private UpgradeSelectionService _upgradeSelectionService;
 
         public static GameManager Instance { get; private set; }
-        
-        public ScoreManager ScoreManager { get; private set; }
+
+        public ResonanceManager ResonanceManager { get; private set; }
+        public ExperienceManager ExperienceManager { get; private set; }
+
         public WindowsService WindowsService => _windowsService;
         public CharacterFactory CharacterFactory => _characterFactory;
         public GameData GameData => _gameData;
         public float GameTime => _gameTimeSec;
-        public ExperienceManager ExperienceManager { get; private set; }
 
-        
-
-
-        // Добавим концептуально еще понятие "игра на паузе", в отличие от нашего урока. В целом, ничего не поменяется, но сам контроль над игрой станет более гибким.
-        public bool IsGamePaused
-        {
-            get;
-            set;
-        } = true;
+        public bool IsGamePaused { get; set; } = true;
 
         private void Awake()
         {
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(this.gameObject);
+                DontDestroyOnLoad(gameObject);
                 Initialize();
             }
             else
             {
-                Destroy(this.gameObject);
+                Destroy(gameObject);
             }
         }
 
         private void Initialize()
         {
-            ScoreManager = new ScoreManager();
+            ResonanceManager = new ResonanceManager();
             ExperienceManager = new ExperienceManager();
             _upgradeSelectionService = new UpgradeSelectionService(_abilityDatabase);
-            _windowsService.Initialize();
 
+            _windowsService.Initialize();
             ExperienceManager.OnLevelChanged += OnLevelUp;
         }
 
@@ -67,39 +59,42 @@ namespace OmniumLessons
                 Debug.Log("Game is already active");
                 return;
             }
-            
-            var player = CharacterFactory.CreateCharacter(CharacterType.DefaultPlayer);
+
+            ResonanceManager.ResetProgress();
+            ExperienceManager.StartGame();
+
+            Character player = CharacterFactory.CreateCharacter(CharacterType.DefaultPlayer);
             player.transform.position = Vector3.zero;
             player.gameObject.SetActive(true);
             RegisterCharacter(player);
 
-            // привязываем камеру к игроку
-            var cameraFollow = Camera.main.GetComponent<CameraFollow>();
+            CameraFollow cameraFollow = Camera.main != null ? Camera.main.GetComponent<CameraFollow>() : null;
             if (cameraFollow != null)
             {
                 cameraFollow.SetTarget(player.transform);
             }
 
             _gameTimeSec = 0f;
-            ScoreManager.StartGame();
 
-            // 4) Запускаем спавн-контроллер
             _spawnController = new CharacterSpawnController();
             _spawnController.StartSpawn();
 
             _isGameActive = true;
             IsGamePaused = false;
+            Time.timeScale = 1f;
         }
 
         private void Update()
         {
             if (!_isGameActive || IsGamePaused)
                 return;
-            
+
             _gameTimeSec += Time.deltaTime;
 
-            // Спавн теперь живёт здесь
-            _spawnController.OnUpdate(Time.deltaTime);
+            if (_spawnController != null)
+            {
+                _spawnController.OnUpdate(Time.deltaTime);
+            }
 
             if (_gameTimeSec >= _gameData.GameTimeSecondsMax)
             {
@@ -107,63 +102,60 @@ namespace OmniumLessons
             }
         }
 
-        // ВАЖНО: сюда будет обращаться SpawnController после создания врага
         public void RegisterCharacter(Character character)
         {
             if (character == null || character.LiveComponent == null)
                 return;
 
+            character.LiveComponent.OnCharacterDeath -= OnCharacterDeathHandler;
             character.LiveComponent.OnCharacterDeath += OnCharacterDeathHandler;
         }
 
         private void OnCharacterDeathHandler(Character deathCharacter)
         {
             Debug.Log("character " + deathCharacter.gameObject.name + " is dead");
+
             switch (deathCharacter.CharacterType)
             {
                 case CharacterType.DefaultPlayer:
                     GameOver();
                     break;
+
                 case CharacterType.DefaultEnemy:
                 case CharacterType.FastEnemy:
                 case CharacterType.TankEnemy:
-                    ScoreManager.AddScore(deathCharacter.CharacterData.ScoreCost);
-                    Debug.Log("Score = " + ScoreManager.GameScore);
                     ExperienceManager.AddExperience(deathCharacter.CharacterData.ExperienceReward);
                     Debug.Log("Exp = " + ExperienceManager.CurrentExperience);
                     break;
-
             }
-        
+
+            if (deathCharacter.LiveComponent != null)
+            {
+                deathCharacter.LiveComponent.OnCharacterDeath -= OnCharacterDeathHandler;
+            }
+
             CharacterFactory.ReturnCharacterToPool(deathCharacter);
             deathCharacter.gameObject.SetActive(false);
-
-            // отписка
-            deathCharacter.LiveComponent.OnCharacterDeath -= OnCharacterDeathHandler;
         }
 
         public void ClearSession()
         {
-            // UI/анимации и кнопки должны работать
             Time.timeScale = 1f;
 
-            // Останавливаем матч
             _isGameActive = false;
             IsGamePaused = true;
 
-            // Остановить спавн 
             if (_spawnController != null)
+            {
                 _spawnController.StopSpawn();
+                _spawnController = null;
+            }
 
-            // Сброс таймера
             _gameTimeSec = 0f;
 
-            // Сброс очков текущей сессии (не глобальных)
-            ScoreManager.StartGame();
-
+            ResonanceManager.ResetProgress();
             ExperienceManager.StartGame();
 
-            // Убрать всех персонажей
             CharacterFactory.ClearAll();
         }
 
@@ -173,30 +165,31 @@ namespace OmniumLessons
             StartGame();
         }
 
-
         private void GameOver()
         {
             Debug.Log("GameOver!");
-            Debug.Log("Score = " + ScoreManager.GameScore);
-            Debug.Log("ScoreMax = " + ScoreManager.ScoreMax);
-            ScoreManager.CompleteMatch();
+            Debug.Log("Resonance = " + ResonanceManager.CurrentResonance);
+
             _isGameActive = false;
             IsGamePaused = true;
 
-            // останавливаем спавн
-            _spawnController.StopSpawn();
+            if (_spawnController != null)
+                _spawnController.StopSpawn();
+
             WindowsService.ShowWindow<DefeatWindow>(false);
         }
 
         private void GameVictory()
         {
-            Debug.Log("Game Over! Time's up!");
-            ScoreManager.CompleteMatch();
+            Debug.Log("Victory! Time's up!");
+            Debug.Log("Resonance = " + ResonanceManager.CurrentResonance);
+
             _isGameActive = false;
             IsGamePaused = true;
 
-            // останавливаем спавн
-            _spawnController.StopSpawn();
+            if (_spawnController != null)
+                _spawnController.StopSpawn();
+
             WindowsService.ShowWindow<VictoryWindow>(false);
         }
 

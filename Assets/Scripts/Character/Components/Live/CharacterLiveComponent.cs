@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace OmniumLessons
@@ -40,14 +40,33 @@ namespace OmniumLessons
 
         public void GetDamage(float damage)
         {
+            if (!IsAlive)
+                return;
+
+            if (damage <= 0f)
+                return;
+
             Health -= damage;
+
             OnCharacterHealthChange?.Invoke(_characterOwner);
 
             Debug.Log($"{_characterOwner.name} get damage by {damage}. Health: {Health}/{MaxHealth}");
+
+            // 💥 если это игрок — сбрасываем серию "без урона"
+            if (_characterOwner.CharacterType == CharacterType.DefaultPlayer)
+            {
+                GameManager.Instance?.ResonanceManager?.RegisterPlayerDamaged();
+            }
         }
 
         private void SetDeath()
         {
+            // 💥 если это враг — начисляем resonance
+            if (_characterOwner.CharacterType != CharacterType.DefaultPlayer)
+            {
+                GameManager.Instance?.ResonanceManager?.RegisterEnemyKilled(_characterOwner);
+            }
+
             OnCharacterDeath?.Invoke(_characterOwner);
         }
     }

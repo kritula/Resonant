@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,45 +10,72 @@ namespace OmniumLessons
         [SerializeField] private TMP_Text healthText;
         [SerializeField] private Slider healthSlider;
 
-        [Space][SerializeField] private Slider experienceSlider;
+        [Space]
+        [SerializeField] private Slider experienceSlider;
 
-        [Space][SerializeField] private TMP_Text timerText;
-        [SerializeField] private TMP_Text scoreText;
-        [SerializeField] private Button pauseButton;
+        [Space]
+        [SerializeField] private TMP_Text timerText;
+        [SerializeField] private TMP_Text resonanceText;
         [SerializeField] private TMP_Text levelText;
+        [SerializeField] private TMP_Text combatFeedbackText;
+        [SerializeField] private Button pauseButton;
+
+        private Coroutine _feedbackCoroutine;
+
         protected override void OpenStart()
         {
             base.OpenStart();
-            var player = GameManager.Instance.CharacterFactory.Player;
 
-            UpdateHealthVisual(player);
-            player.LiveComponent.OnCharacterHealthChange += UpdateHealthVisual;
+            Character player = GameManager.Instance.CharacterFactory.Player;
+            if (player != null)
+            {
+                UpdateHealthVisual(player);
+                player.LiveComponent.OnCharacterHealthChange += UpdateHealthVisual;
+            }
 
-            ScoreChangeHandler(GameManager.Instance.ScoreManager.GameScore);
-            GameManager.Instance.ScoreManager.OnScoreChanged += ScoreChangeHandler;
+            if (GameManager.Instance?.ResonanceManager != null)
+            {
+                ResonanceChangeHandler(GameManager.Instance.ResonanceManager.CurrentResonance);
+                GameManager.Instance.ResonanceManager.OnResonanceChanged += ResonanceChangeHandler;
+            }
+
             GameManager.Instance.ExperienceManager.OnExperienceChanged += UpdateExperience;
-
             GameManager.Instance.ExperienceManager.OnLevelChanged += UpdateLevel;
+
             UpdateLevel(GameManager.Instance.ExperienceManager.CurrentLevel);
+            UpdateTimer();
+
+            if (combatFeedbackText != null)
+            {
+                combatFeedbackText.gameObject.SetActive(false);
+            }
 
             pauseButton.onClick.AddListener(OnPauseClicked);
-
-            UpdateTimer();
         }
 
         protected override void CloseStart()
         {
             base.CloseStart();
 
-            GameManager.Instance.ScoreManager.OnScoreChanged -= ScoreChangeHandler;
-            GameManager.Instance.ExperienceManager.OnExperienceChanged -= UpdateExperience;
-            GameManager.Instance.ExperienceManager.OnLevelChanged -= UpdateLevel;
+            if (GameManager.Instance != null)
+            {
+                if (GameManager.Instance.ResonanceManager != null)
+                {
+                    GameManager.Instance.ResonanceManager.OnResonanceChanged -= ResonanceChangeHandler;
+                }
 
-            var player = GameManager.Instance.CharacterFactory.Player;
-            if (player == null)
-                return;
+                if (GameManager.Instance.ExperienceManager != null)
+                {
+                    GameManager.Instance.ExperienceManager.OnExperienceChanged -= UpdateExperience;
+                    GameManager.Instance.ExperienceManager.OnLevelChanged -= UpdateLevel;
+                }
 
-            player.LiveComponent.OnCharacterHealthChange -= UpdateHealthVisual;
+                Character player = GameManager.Instance.CharacterFactory.Player;
+                if (player != null)
+                {
+                    player.LiveComponent.OnCharacterHealthChange -= UpdateHealthVisual;
+                }
+            }
 
             pauseButton.onClick.RemoveListener(OnPauseClicked);
         }
@@ -62,21 +90,44 @@ namespace OmniumLessons
             healthSlider.value = health;
         }
 
-        private void ScoreChangeHandler(int score)
+        private void ResonanceChangeHandler(int resonance)
         {
-            scoreText.text = score.ToString();
+            resonanceText.text = resonance.ToString();
+        }
+
+        public void ShowCombatFeedback(string message)
+        {
+            if (combatFeedbackText == null)
+                return;
+
+            if (_feedbackCoroutine != null)
+            {
+                StopCoroutine(_feedbackCoroutine);
+            }
+
+            _feedbackCoroutine = StartCoroutine(ShowCombatFeedbackRoutine(message));
+        }
+
+        private IEnumerator ShowCombatFeedbackRoutine(string message)
+        {
+            combatFeedbackText.gameObject.SetActive(true);
+            combatFeedbackText.text = message;
+
+            yield return new WaitForSecondsRealtime(0.8f);
+
+            combatFeedbackText.gameObject.SetActive(false);
+            _feedbackCoroutine = null;
         }
 
         private void UpdateTimer()
         {
-            var min = (int)(GameManager.Instance.GameTime / 60);
-            var sec = (int)(GameManager.Instance.GameTime % 60);
+            int min = (int)(GameManager.Instance.GameTime / 60);
+            int sec = (int)(GameManager.Instance.GameTime % 60);
             timerText.text = GetTime(min) + ":" + GetTime(sec);
-
 
             string GetTime(int value)
             {
-                return (value < 10) ? "0" + value : value.ToString();
+                return value < 10 ? "0" + value : value.ToString();
             }
         }
 

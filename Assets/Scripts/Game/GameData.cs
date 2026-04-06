@@ -15,11 +15,11 @@ namespace OmniumLessons
         
 		[Space(10), Header("SpawnLogic")]
 		[SerializeField]
-		private float timeBetweenEnemySpawn = 2;
+		private float timeBetweenEnemySpawn;
 		[SerializeField]
-		private float minEnemySpawnOffset = 5;
+		private float minEnemySpawnOffset;
 		[SerializeField]
-		private float maxEnemySpawnOffset = 15;
+		private float maxEnemySpawnOffset;
         
         
 		public float GameTimeMinutesMax => 

@@ -16,5 +16,5 @@ MonoBehaviour:
   baseExperience: 20
   grownRate: 10
   timeBetweenEnemySpawn: 2
-  minEnemySpawnOffset: 5
-  maxEnemySpawnOffset: 8
+  minEnemySpawnOffset: 2
+  maxEnemySpawnOffset: 5

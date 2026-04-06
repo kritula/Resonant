@@ -78,21 +78,8 @@ namespace OmniumLessons
             Vector3 movementVector = new Vector3(moveHorizontal, 0.0f, moveVertical).normalized;
             MovableComponent.Move(movementVector);
 
-            if (CharacterTarget == null)
+            if (CharacterTarget != null)
             {
-                MovableComponent.Rotation(movementVector);
-            }
-            else
-            {
-                Vector3 directionToTarget = CharacterTarget.transform.position - transform.position;
-                directionToTarget.y = 0f;
-                directionToTarget.Normalize();
-
-                if (directionToTarget != Vector3.zero)
-                {
-                    MovableComponent.Rotation(directionToTarget);
-                }
-
                 float distance = Vector3.Distance(transform.position, CharacterTarget.transform.position);
 
                 if (distance <= _characterData.WeaponData.AttackDistance)

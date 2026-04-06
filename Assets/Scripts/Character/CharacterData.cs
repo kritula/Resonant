@@ -9,7 +9,7 @@ namespace OmniumLessons
         [SerializeField] private Transform _characterTransform;
         [SerializeField] private WeaponData _weaponData;
         [SerializeField] private float _maxHealth = 50f;
-        [SerializeField] private int _scoreCost = 1;
+        [SerializeField] private int _resonanceCost = 1;
         [SerializeField] private int _experienceReward = 1;
 
         private Character _character;
@@ -19,7 +19,7 @@ namespace OmniumLessons
         public Transform CharacterTransform => _characterTransform;
         public WeaponData WeaponData => _weaponData;
         public float MaxHealth => _maxHealth;
-        public int ScoreCost => _scoreCost;
+        public int ResonanceCost => _resonanceCost;
         public int ExperienceReward => _experienceReward;
         public Character Character => _character;
 

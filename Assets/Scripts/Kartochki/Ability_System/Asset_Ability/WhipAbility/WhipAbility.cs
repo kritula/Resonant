@@ -67,17 +67,17 @@ namespace OmniumLessons
 
         private void PerformAttack()
         {
-            Vector3 sideDirection = _lastHorizontalDirection > 0 ? Vector3.right : Vector3.left;
+            Vector3 localPosition = Vector3.zero;
+            localPosition += Vector3.right * _lastHorizontalDirection * (_attackDistance * 0.5f);
+            localPosition += Vector3.up * _spawnHeight;
 
-            Vector3 spawnPosition = _owner.transform.position;
-            spawnPosition += sideDirection * (_attackDistance * 0.5f);
-            spawnPosition += Vector3.up * _spawnHeight;
-
-            Quaternion rotation = _lastHorizontalDirection > 0
+            Quaternion localRotation = _lastHorizontalDirection > 0
                 ? Quaternion.identity
                 : Quaternion.Euler(0f, 180f, 0f);
 
-            WhipHitbox whipHitbox = Object.Instantiate(_whipHitboxPrefab, spawnPosition, rotation);
+            WhipHitbox whipHitbox = Object.Instantiate(_whipHitboxPrefab, _owner.transform);
+            whipHitbox.transform.localPosition = localPosition;
+            whipHitbox.transform.localRotation = localRotation;
 
             whipHitbox.Initialize(
                 _owner,

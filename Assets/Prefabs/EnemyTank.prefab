@@ -101,7 +101,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1.0000001, y: 2, z: 1.0000002}
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
@@ -183,7 +183,7 @@ MonoBehaviour:
   _characterTransform: {fileID: 7657086876330706719}
   _weaponData: {fileID: 11400000, guid: cbb52d657de7a2e4ca69eb55be6605ea, type: 2}
   _maxHealth: 15
-  _scoreCost: 12
+  _resonanceCost: 4
   _experienceReward: 60
 --- !u!114 &1978518390786399864
 MonoBehaviour:

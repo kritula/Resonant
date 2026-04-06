@@ -62,7 +62,7 @@ namespace OmniumLessons
         {
             Vector3 direction = CharacterTarget.transform.position - transform.position;
             direction.y = 0f;
-            direction.Normalize();
+            direction = direction.normalized;
 
             MovableComponent.Move(direction);
 
