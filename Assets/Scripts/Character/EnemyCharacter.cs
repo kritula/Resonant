@@ -5,7 +5,7 @@ namespace OmniumLessons
     public class EnemyCharacter : Character
     {
         [SerializeField] private AiState _aiState;
-        
+
         public override Character CharacterTarget => GameManager.Instance.CharacterFactory.Player;
 
         public override void Initialize()
@@ -14,58 +14,76 @@ namespace OmniumLessons
             {
                 _characterData = GetComponent<CharacterData>();
             }
-            
+
             base.Initialize();
 
             LiveComponent = new CharacterLiveComponent(this);
 
-            AttackComponent = new CharacterAttackComponent();
+            AttackComponent = new MeleeAttackComponent();
             AttackComponent.Initialize(_characterData);
+
+            _aiState = AiState.MoveToTarget;
         }
-        
+
         public override void Update()
         {
+            if (!LiveComponent.IsAlive)
+                return;
+
+            if (CharacterTarget == null)
+                return;
+
+            float distance = Vector3.Distance(transform.position, CharacterTarget.transform.position);
+
+            if (distance <= _characterData.WeaponData.AttackDistance)
+            {
+                _aiState = AiState.Attack;
+            }
+            else
+            {
+                _aiState = AiState.MoveToTarget;
+            }
+
             switch (_aiState)
             {
-                case AiState.None:
-                    break;
                 case AiState.MoveToTarget:
-                    Move();
+                    MoveToTarget();
                     break;
+
                 case AiState.Attack:
-                    Attack();
+                    AttackTarget();
                     break;
             }
 
             AttackComponent.OnUpdate();
         }
 
-        private void Move()
+        private void MoveToTarget()
         {
-            Vector3 direction = CharacterTarget.transform.position - _characterData.CharacterTransform.transform.position;
+            Vector3 direction = CharacterTarget.transform.position - transform.position;
+            direction.y = 0f;
             direction.Normalize();
-            
+
             MovableComponent.Move(direction);
-            MovableComponent.Rotation(direction);
-            
-            if (Vector3.Distance(CharacterTarget.transform.position,
-                    _characterData.CharacterController.transform.position) <= 3)
+
+            if (direction != Vector3.zero)
             {
-                _aiState = AiState.Attack;
-                return;
+                MovableComponent.Rotation(direction);
             }
         }
 
-        private void Attack()
+        private void AttackTarget()
         {
-            AttackComponent.MakeDamage(CharacterTarget);
-            
-            if (Vector3.Distance(CharacterTarget.transform.position,
-                    _characterData.CharacterController.transform.position) > 3)
+            Vector3 direction = CharacterTarget.transform.position - transform.position;
+            direction.y = 0f;
+            direction.Normalize();
+
+            if (direction != Vector3.zero)
             {
-                _aiState = AiState.MoveToTarget;
-                return;
+                MovableComponent.Rotation(direction);
             }
+
+            AttackComponent.MakeDamage(CharacterTarget);
         }
     }
 }

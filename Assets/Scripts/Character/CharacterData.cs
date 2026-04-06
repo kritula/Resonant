@@ -4,20 +4,28 @@ namespace OmniumLessons
 {
     public class CharacterData : MonoBehaviour
     {
-        [SerializeField] private int _scoreCost;
-        [SerializeField] private float _defaultSpeed;
-        [SerializeField] private Transform _characterTransform;
+        [SerializeField] private float _defaultSpeed = 5f;
         [SerializeField] private CharacterController _characterController;
+        [SerializeField] private Transform _characterTransform;
         [SerializeField] private WeaponData _weaponData;
-        [SerializeField] private int _maxHealth;
-        [SerializeField] private int _experienceReward;
+        [SerializeField] private float _maxHealth = 50f;
+        [SerializeField] private int _scoreCost = 1;
+        [SerializeField] private int _experienceReward = 1;
 
-        public int ScoreCost => _scoreCost;
+        private Character _character;
+
         public float DefaultSpeed => _defaultSpeed;
-        public Transform CharacterTransform => _characterTransform;
         public CharacterController CharacterController => _characterController;
+        public Transform CharacterTransform => _characterTransform;
         public WeaponData WeaponData => _weaponData;
-        public int MaxHealth => _maxHealth;
+        public float MaxHealth => _maxHealth;
+        public int ScoreCost => _scoreCost;
         public int ExperienceReward => _experienceReward;
+        public Character Character => _character;
+
+        private void Awake()
+        {
+            _character = GetComponent<Character>();
+        }
     }
 }

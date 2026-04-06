@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7e29b4e7d1c2334ab8edf263567381d, type: 3}
+  m_Name: OrbitalAbilityData
+  m_EditorClassIdentifier: 
+  _upgradeName: OrbitalAbility
+  _description: "\u043B\u0435\u0442\u0430\u044E\u0449\u0438\u0435 \u0448\u0430\u0440\u044B
+    \u0432\u043E\u043A\u0440\u0443\u0433"
+  _icon: {fileID: 0}
+  _cooldown: 0
+  _abilityPrefab: {fileID: 9216059092388848995, guid: de16912beda7dc64ba0ab86cfaf82829, type: 3}

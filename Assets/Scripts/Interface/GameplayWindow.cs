@@ -55,7 +55,7 @@ namespace OmniumLessons
         private void UpdateHealthVisual(Character character)
         {
             int health = (int)character.LiveComponent.Health;
-            int healthMax = character.LiveComponent.MaxHealth;
+            float healthMax = character.LiveComponent.MaxHealth;
 
             healthText.text = health + "/" + healthMax;
             healthSlider.maxValue = healthMax;

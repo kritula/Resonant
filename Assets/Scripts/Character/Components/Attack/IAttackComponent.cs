@@ -1,6 +1,6 @@
 namespace OmniumLessons {
     public interface IAttackComponent {
-        public int Damage { get; }
+      
 
         public void Initialize(CharacterData characterData);
 

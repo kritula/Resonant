@@ -1,33 +1,38 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace OmniumLessons
 {
     public class SkillsWindow : Window
     {
-        //[SerializeField] private Button backButton;
+        [SerializeField] private Transform container;
+        [SerializeField] private UpgradeButton buttonPrefab;
 
-        // ймнойх яонянамняреи
-        [SerializeField] private AbilityButton[] abilityButtons;
+        private readonly List<UpgradeButton> _buttons = new List<UpgradeButton>();
 
-        public override void Initialize()
+        public void ShowUpgrades(List<UpgradeData> upgrades)
         {
-            //backButton.onClick.AddListener(OnBackClicked);
+            ClearButtons();
+
+            foreach (var upgrade in upgrades)
+            {
+                UpgradeButton button = Instantiate(buttonPrefab, container);
+                button.Setup(upgrade);
+                _buttons.Add(button);
+            }
         }
 
-        //private void OnBackClicked()
-        //{
-        //    Hide(false);
-        //    GameManager.Instance.WindowsService.ShowWindow<PauseMenuWindow>(true);
-        //}
-
-        public void ShowAbilities(List<AbilityData> abilities)
+        private void ClearButtons()
         {
-            for (int i = 0; i < abilities.Count && i < abilityButtons.Length; i++)
+            for (int i = 0; i < _buttons.Count; i++)
             {
-                abilityButtons[i].Setup(abilities[i]);
+                if (_buttons[i] != null)
+                {
+                    Destroy(_buttons[i].gameObject);
+                }
             }
+
+            _buttons.Clear();
         }
     }
 }

@@ -8,14 +8,14 @@ namespace OmniumLessons
         [SerializeField] private CharacterFactory _characterFactory;
         [SerializeField] private GameData _gameData;
         [SerializeField] private WindowsService _windowsService;
-        [SerializeField] private AbilityDatabase _abilityDatabase;
+        [SerializeField] private UpgradeDatabase _abilityDatabase;
 
         private bool _isGameActive = false;
         private  float _gameTimeSec = 0;
 
         private CharacterSpawnController _spawnController;
 
-        private AbilitySelectionService _abilitySelectionService;
+        private UpgradeSelectionService _upgradeSelectionService;
 
         public static GameManager Instance { get; private set; }
         
@@ -54,7 +54,7 @@ namespace OmniumLessons
         {
             ScoreManager = new ScoreManager();
             ExperienceManager = new ExperienceManager();
-            _abilitySelectionService = new AbilitySelectionService(_abilityDatabase);
+            _upgradeSelectionService = new UpgradeSelectionService(_abilityDatabase);
             _windowsService.Initialize();
 
             ExperienceManager.OnLevelChanged += OnLevelUp;
@@ -205,10 +205,10 @@ namespace OmniumLessons
             IsGamePaused = true;
             Time.timeScale = 0f;
 
-            List<AbilityData> abilities = _abilitySelectionService.GetRandomAbilities(3);
+            List<UpgradeData> upgrades = _upgradeSelectionService.GetRandomUpgrades(3);
 
             SkillsWindow skillsWindow = WindowsService.GetWindow<SkillsWindow>();
-            skillsWindow.ShowAbilities(abilities);
+            skillsWindow.ShowUpgrades(upgrades);
 
             WindowsService.ShowWindow<SkillsWindow>(true);
         }

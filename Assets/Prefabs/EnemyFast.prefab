@@ -178,12 +178,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b8f6c14a74a29c4c89373b08cd4a6b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _scoreCost: 5
   _defaultSpeed: 5
-  _characterTransform: {fileID: 5955612968490025706}
   _characterController: {fileID: 8112031080680725225}
-  _weaponData: {fileID: 11400000, guid: 9d0db534d534c3b45b07d7f4ff830db1, type: 2}
+  _characterTransform: {fileID: 5955612968490025706}
+  _weaponData: {fileID: 11400000, guid: bb808bae2c43348439d1d814d4a32432, type: 2}
   _maxHealth: 5
+  _scoreCost: 5
   _experienceReward: 35
 --- !u!114 &4569272487351501318
 MonoBehaviour:

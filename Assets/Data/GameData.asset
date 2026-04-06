@@ -17,4 +17,4 @@ MonoBehaviour:
   grownRate: 10
   timeBetweenEnemySpawn: 2
   minEnemySpawnOffset: 5
-  maxEnemySpawnOffset: 15
+  maxEnemySpawnOffset: 8

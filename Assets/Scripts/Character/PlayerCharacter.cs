@@ -5,6 +5,7 @@ namespace OmniumLessons
     public class PlayerCharacter : Character
     {
         public AbilityManager AbilityManager { get; private set; }
+        public AttackModifierController AttackModifierController { get; private set; }
 
         public override Character CharacterTarget
         {
@@ -13,6 +14,7 @@ namespace OmniumLessons
                 Character target = null;
                 float nearest = float.MaxValue;
                 var activePool = GameManager.Instance.CharacterFactory.ActiveCharacters;
+
                 foreach (var activeCharacter in activePool)
                 {
                     if (activeCharacter.CharacterType == CharacterType.DefaultPlayer)
@@ -44,15 +46,25 @@ namespace OmniumLessons
 
             LiveComponent = new CharacterLiveComponent(this);
 
-            AttackComponent = new CharacterAttackComponent();
+            AttackComponent = new ProjectileAttackComponent();
             AttackComponent.Initialize(_characterData);
 
             AbilityManager = new AbilityManager(this);
+            AttackModifierController = new AttackModifierController();
+        }
+
+        public void AddAttackModifier(AttackModifierUpgradeData upgradeData)
+        {
+            if (upgradeData == null)
+                return;
+
+            AttackModifierController.ApplyModifier(upgradeData);
         }
 
         public void ClearAbilities()
         {
             AbilityManager?.ClearAbilities();
+            AttackModifierController?.Reset();
         }
 
         public override void Update()
@@ -64,9 +76,7 @@ namespace OmniumLessons
             float moveVertical = Input.GetAxis("Vertical");
 
             Vector3 movementVector = new Vector3(moveHorizontal, 0.0f, moveVertical).normalized;
-
             MovableComponent.Move(movementVector);
-            MovableComponent.Rotation(movementVector);
 
             if (CharacterTarget == null)
             {
@@ -75,8 +85,13 @@ namespace OmniumLessons
             else
             {
                 Vector3 directionToTarget = CharacterTarget.transform.position - transform.position;
+                directionToTarget.y = 0f;
                 directionToTarget.Normalize();
-                MovableComponent.Rotation(directionToTarget);
+
+                if (directionToTarget != Vector3.zero)
+                {
+                    MovableComponent.Rotation(directionToTarget);
+                }
 
                 float distance = Vector3.Distance(transform.position, CharacterTarget.transform.position);
 

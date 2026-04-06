@@ -25,7 +25,7 @@ namespace OmniumLessons
 
         private bool _isActiveSpawn;
 
-        private List<EnemySpawnSettings> _enemySpawnSettings = new List<EnemySpawnSettings>
+        private readonly List<EnemySpawnSettings> _enemySpawnSettings = new List<EnemySpawnSettings>
         {
             new EnemySpawnSettings { CharacterType = CharacterType.DefaultEnemy, SpawnStartTime = 0f },
             new EnemySpawnSettings { CharacterType = CharacterType.FastEnemy, SpawnStartTime = 15f },
@@ -68,7 +68,7 @@ namespace OmniumLessons
         private int CountActiveEnemies()
         {
             int count = 0;
-            var activeCharacters = CharacterFactory.ActiveCharacters;
+            List<Character> activeCharacters = CharacterFactory.ActiveCharacters;
 
             for (int i = 0; i < activeCharacters.Count; i++)
             {
@@ -84,13 +84,13 @@ namespace OmniumLessons
 
         private void SpawnEnemy()
         {
+            if (CharacterFactory.Player == null)
+                return;
+
             CharacterType enemyType = GetEnemyTypeForSpawn();
             Character enemy = CharacterFactory.CreateCharacter(enemyType);
 
-            float posX = CharacterFactory.Player.transform.position.x + GetOffset();
-            float posZ = CharacterFactory.Player.transform.position.z + GetOffset();
-
-            Vector3 spawnPoint = new Vector3(posX, 0, posZ);
+            Vector3 spawnPoint = GetSpawnPointOutsideScreen();
             enemy.transform.position = spawnPoint;
 
             GameManager.Instance.RegisterCharacter(enemy);
@@ -114,12 +114,98 @@ namespace OmniumLessons
             return availableEnemies[randomIndex];
         }
 
-        private float GetOffset()
+        private Vector3 GetSpawnPointOutsideScreen()
         {
-            bool isPlus = Random.value > 0.5f;
-            float randomOffset = Random.Range(GameData.MinEnemySpawnOffset, GameData.MaxEnemySpawnOffset);
+            Camera mainCamera = Camera.main;
 
-            return isPlus ? randomOffset : -randomOffset;
+            if (mainCamera == null || CharacterFactory.Player == null)
+                return Vector3.zero;
+
+            Transform playerTransform = CharacterFactory.Player.transform;
+
+            float halfHeight = mainCamera.orthographicSize;
+            float halfWidth = halfHeight * mainCamera.aspect;
+
+            // ВАЖНО: берём центр не от игрока, а от камеры
+            Vector3 cameraPosition = mainCamera.transform.position;
+
+            float minX = cameraPosition.x - halfWidth;
+            float maxX = cameraPosition.x + halfWidth;
+            float minZ = cameraPosition.z - halfHeight;
+            float maxZ = cameraPosition.z + halfHeight;
+
+            float extraOffset = Mathf.Max(GameData.MaxEnemySpawnOffset, 5f);
+            float minDistanceFromPlayer = halfHeight + 5f;
+
+            for (int attempt = 0; attempt < 20; attempt++)
+            {
+                int side = Random.Range(0, 4);
+                Vector3 spawnPoint;
+
+                switch (side)
+                {
+                    case 0: // left
+                        spawnPoint = new Vector3(
+                            minX - extraOffset,
+                            playerTransform.position.y,
+                            Random.Range(minZ, maxZ));
+                        break;
+
+                    case 1: // right
+                        spawnPoint = new Vector3(
+                            maxX + extraOffset,
+                            playerTransform.position.y,
+                            Random.Range(minZ, maxZ));
+                        break;
+
+                    case 2: // bottom
+                        spawnPoint = new Vector3(
+                            Random.Range(minX, maxX),
+                            playerTransform.position.y,
+                            minZ - extraOffset);
+                        break;
+
+                    default: // top
+                        spawnPoint = new Vector3(
+                            Random.Range(minX, maxX),
+                            playerTransform.position.y,
+                            maxZ + extraOffset);
+                        break;
+                }
+
+                // Проверка 1: не слишком близко к игроку
+                float distanceToPlayer = Vector3.Distance(
+                    new Vector3(spawnPoint.x, 0f, spawnPoint.z),
+                    new Vector3(playerTransform.position.x, 0f, playerTransform.position.z));
+
+                if (distanceToPlayer < minDistanceFromPlayer)
+                    continue;
+
+                // Проверка 2: действительно ли точка вне экрана
+                Vector3 viewportPoint = mainCamera.WorldToViewportPoint(spawnPoint);
+
+                bool isOutsideScreen =
+                    viewportPoint.x < 0f || viewportPoint.x > 1f ||
+                    viewportPoint.y < 0f || viewportPoint.y > 1f ||
+                    viewportPoint.z < 0f;
+
+                if (!isOutsideScreen)
+                    continue;
+
+                return spawnPoint;
+            }
+
+            // запасной вариант — далеко по кругу от игрока
+            Vector2 fallbackDirection = Random.insideUnitCircle.normalized;
+            if (fallbackDirection == Vector2.zero)
+                fallbackDirection = Vector2.right;
+
+            float fallbackDistance = halfHeight + extraOffset + 5f;
+
+            return new Vector3(
+                playerTransform.position.x + fallbackDirection.x * fallbackDistance,
+                playerTransform.position.y,
+                playerTransform.position.z + fallbackDirection.y * fallbackDistance);
         }
     }
 }

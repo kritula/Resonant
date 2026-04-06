@@ -12,7 +12,7 @@ namespace OmniumLessons
         private float _health;
 
         public bool IsAlive => Health > 0;
-        public int MaxHealth => _characterOwner.CharacterData.MaxHealth;
+        public float MaxHealth => _characterOwner.CharacterData.MaxHealth;
 
         public float Health
         {
@@ -38,7 +38,7 @@ namespace OmniumLessons
             _health = MaxHealth;
         }
 
-        public void GetDamage(int damage)
+        public void GetDamage(float damage)
         {
             Health -= damage;
             OnCharacterHealthChange?.Invoke(_characterOwner);
