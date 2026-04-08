@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1e31925e6454a64eb5eb3783def079a, type: 3}
+  m_Name: NeuralDroneAbilityData_Default
+  m_EditorClassIdentifier: 
+  _dronePrefab: {fileID: 8372655473076037190, guid: 1d74894a4898b454d98728762129f5f6, type: 3}
+  _projectilePrefab: {fileID: 3019351550931906686, guid: 63a7465b9887aef459851e234b1437d3, type: 3}
+  _baseDroneCount: 1
+  _baseDamage: 10
+  _baseAttackCooldown: 1.2
+  _baseAttackRange: 8
+  _followRadius: 3
+  _hoverHeight: 2
+  _followLerpSpeed: 8
+  _orbitRotationSpeed: 90
+  _projectileSpeed: 20
+  _projectileLifetime: 1.5
+  _level2DamageMultiplier: 1.25
+  _level3DroneCount: 2
+  _level4AttackCooldownMultiplier: 0.65
+  _level5Piercing: 1
+  _level5PiercingCount: 99

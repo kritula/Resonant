@@ -198,7 +198,8 @@ namespace OmniumLessons
             IsGamePaused = true;
             Time.timeScale = 0f;
 
-            List<UpgradeData> upgrades = _upgradeSelectionService.GetRandomUpgrades(3);
+            PlayerCharacter player = CharacterFactory.Player as PlayerCharacter;
+            List<UpgradeData> upgrades = _upgradeSelectionService.GetRandomUpgrades(3, player);
 
             SkillsWindow skillsWindow = WindowsService.GetWindow<SkillsWindow>();
             skillsWindow.ShowUpgrades(upgrades);

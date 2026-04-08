@@ -1,49 +1,70 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace OmniumLessons
 {
     public class MineObject : MonoBehaviour
     {
-        [Header("Mine settings")]
-        [SerializeField] private float _damage = 15f;
-        [SerializeField] private float _explosionRadius = 2.5f;
-        [SerializeField] private float _lifeTime = 15f;
-        [SerializeField] private float _armDelay = 0.2f;
+        [SerializeField] private SphereCollider _triggerCollider;
 
         private PlayerCharacter _owner;
-        private MineAbility _mineAbility;
-        private float _armTimer;
-        private bool _isArmed;
-        private bool _isDestroyed;
+        private float _damage;
+        private float _explosionRadius;
+        private float _activationDelay;
+        private float _lifeTime;
 
-        public void Initialize(PlayerCharacter owner, MineAbility mineAbility)
+        private bool _chainReactionEnabled;
+        private float _chainReactionDelay;
+        private float _chainReactionRadius;
+
+        private bool _isArmed;
+        private bool _isExploded;
+
+        public void Initialize(
+            PlayerCharacter owner,
+            float damage,
+            float explosionRadius,
+            float activationDelay,
+            float lifeTime,
+            bool chainReactionEnabled,
+            float chainReactionDelay,
+            float chainReactionRadius)
         {
             _owner = owner;
-            _mineAbility = mineAbility;
-            _armTimer = _armDelay;
-            _isArmed = false;
-            _isDestroyed = false;
+            _damage = damage;
+            _explosionRadius = explosionRadius;
+            _activationDelay = activationDelay;
+            _lifeTime = lifeTime;
 
+            _chainReactionEnabled = chainReactionEnabled;
+            _chainReactionDelay = chainReactionDelay;
+            _chainReactionRadius = chainReactionRadius;
+
+            if (_triggerCollider == null)
+            {
+                _triggerCollider = GetComponent<SphereCollider>();
+            }
+
+            if (_triggerCollider != null)
+            {
+                _triggerCollider.isTrigger = true;
+                _triggerCollider.radius = 0.35f;
+            }
+
+            StartCoroutine(ArmRoutine());
             Destroy(gameObject, _lifeTime);
         }
 
-        private void Update()
+        private IEnumerator ArmRoutine()
         {
-            if (_isArmed)
-                return;
-
-            if (_armTimer > 0f)
-            {
-                _armTimer -= Time.deltaTime;
-                return;
-            }
-
+            yield return new WaitForSeconds(_activationDelay);
             _isArmed = true;
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!_isArmed)
+            if (!_isArmed || _isExploded)
                 return;
 
             Character target = other.GetComponent<Character>();
@@ -65,20 +86,33 @@ namespace OmniumLessons
             if (target.CharacterType == _owner.CharacterType)
                 return;
 
-            if (!target.LiveComponent.IsAlive)
+            if (target.LiveComponent == null || !target.LiveComponent.IsAlive)
                 return;
 
             Explode();
         }
 
-        private void Explode()
+        public void Explode()
         {
-            if (_isDestroyed)
+            if (_isExploded)
                 return;
 
-            _isDestroyed = true;
+            _isExploded = true;
 
+            DealExplosionDamage();
+
+            if (_chainReactionEnabled)
+            {
+                TriggerNearbyMines();
+            }
+
+            Destroy(gameObject);
+        }
+
+        private void DealExplosionDamage()
+        {
             Collider[] hits = Physics.OverlapSphere(transform.position, _explosionRadius);
+            HashSet<Character> damagedTargets = new HashSet<Character>();
 
             for (int i = 0; i < hits.Length; i++)
             {
@@ -101,32 +135,77 @@ namespace OmniumLessons
                 if (target.CharacterType == _owner.CharacterType)
                     continue;
 
-                if (!target.LiveComponent.IsAlive)
+                if (target.LiveComponent == null || !target.LiveComponent.IsAlive)
                     continue;
 
+                if (damagedTargets.Contains(target))
+                    continue;
+
+                damagedTargets.Add(target);
                 target.LiveComponent.GetDamage(_damage);
             }
-
-            if (_mineAbility != null)
-            {
-                _mineAbility.RemoveMine(this);
-            }
-
-            Destroy(gameObject);
         }
 
-        private void OnDestroy()
+        private void TriggerNearbyMines()
         {
-            if (_mineAbility != null)
+            Collider[] hits = Physics.OverlapSphere(transform.position, _chainReactionRadius);
+            HashSet<MineObject> minesToTrigger = new HashSet<MineObject>();
+
+            for (int i = 0; i < hits.Length; i++)
             {
-                _mineAbility.RemoveMine(this);
+                MineObject mine = hits[i].GetComponent<MineObject>();
+
+                if (mine == null)
+                {
+                    mine = hits[i].GetComponentInParent<MineObject>();
+                }
+
+                if (mine == null)
+                    continue;
+
+                if (mine == this)
+                    continue;
+
+                if (mine._isExploded)
+                    continue;
+
+                minesToTrigger.Add(mine);
             }
+
+            foreach (MineObject mine in minesToTrigger)
+            {
+                mine.StartChainReaction(_chainReactionDelay);
+            }
+        }
+
+        public void StartChainReaction(float delay)
+        {
+            if (_isExploded)
+                return;
+
+            StartCoroutine(ChainReactionRoutine(delay));
+        }
+
+        private IEnumerator ChainReactionRoutine(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            if (_isExploded)
+                yield break;
+
+            Explode();
         }
 
         private void OnDrawGizmosSelected()
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, _explosionRadius);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, _explosionRadius > 0f ? _explosionRadius : 2f);
+
+            if (_chainReactionEnabled)
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(transform.position, _chainReactionRadius);
+            }
         }
     }
 }

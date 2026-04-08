@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ad78864f36af7b499b503963ee0c7b6, type: 3}
+  m_Name: MineAbilityData_Default
+  m_EditorClassIdentifier: 
+  _minePrefab: {fileID: 1308049245037499000, guid: 2eba94c2d09f9634ba818883291794c8, type: 3}
+  _baseSpawnCooldown: 3
+  _baseSpawnDistance: 2
+  _baseDamage: 15
+  _baseExplosionRadius: 2
+  _activationDelay: 0.5
+  _mineLifeTime: 12
+  _level2CooldownMultiplier: 0.8
+  _level3RadiusMultiplier: 1.35
+  _level4DamageMultiplier: 1.6
+  _enableChainReaction: 1
+  _chainReactionDelay: 0.15
+  _chainReactionRadius: 3

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3decf6c11b5bb146a73f996d216be98, type: 3}
+  m_Name: SynapticShieldAbilityData_Default
+  m_EditorClassIdentifier: 
+  _baseRadius: 1.5
+  _baseCooldown: 2
+  _baseKnockbackForce: 2.5
+  _level2RadiusMultiplier: 1.25
+  _level3Damage: 8
+  _level4CooldownMultiplier: 0.65
+  _level5KnockbackMultiplier: 1.5
+  _level5DamageMultiplier: 1.5
+  _level5StunDuration: 0.5

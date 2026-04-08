@@ -6,21 +6,25 @@ namespace OmniumLessons
     {
         [SerializeField] protected CharacterData _characterData;
         [SerializeField] protected CharacterType _characterType;
+
         public CharacterData CharacterData => _characterData;
         public CharacterType CharacterType => _characterType;
-        
+
         public virtual Character CharacterTarget { get; }
-        
+
         public IMovable MovableComponent { get; protected set; }
         public ILiveComponent LiveComponent { get; protected set; }
         public IAttackComponent AttackComponent { get; protected set; }
-        
+        public StatusEffectController StatusEffectController { get; protected set; }
+
         public virtual void Initialize()
         {
             MovableComponent = new CharacterMovementComponent();
             MovableComponent.Initialize(_characterData);
+
+            StatusEffectController = new StatusEffectController(this);
         }
-        
+
         public abstract void Update();
     }
 }

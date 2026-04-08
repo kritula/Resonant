@@ -46,6 +46,17 @@ namespace OmniumLessons
             if (damage <= 0f)
                 return;
 
+            // 🔹 НЕУЯЗВИМОСТЬ (Phase Shift)
+            if (_characterOwner != null &&
+                _characterOwner.StatusEffectController != null &&
+                _characterOwner.StatusEffectController.HasEffect<InvulnerabilityEffect>())
+            {
+                // можно добавить визуал/лог при желании
+                // Debug.Log($"{_characterOwner.name} is INVULNERABLE");
+
+                return;
+            }
+
             Health -= damage;
 
             OnCharacterHealthChange?.Invoke(_characterOwner);

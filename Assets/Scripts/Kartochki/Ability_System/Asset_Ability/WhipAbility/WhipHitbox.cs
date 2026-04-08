@@ -17,8 +17,9 @@ namespace OmniumLessons
         public void Initialize(
             PlayerCharacter owner,
             float damage,
-            float attackDistance,
-            float attackWidth,
+            float hitboxLength,
+            float hitboxWidth,
+            float hitboxHeight,
             float lifeTime)
         {
             _owner = owner;
@@ -31,17 +32,16 @@ namespace OmniumLessons
                 _boxCollider = GetComponent<BoxCollider>();
             }
 
+            Vector3 hitboxSize = new Vector3(hitboxWidth, hitboxHeight, hitboxLength);
+
             if (_boxCollider != null)
             {
                 _boxCollider.isTrigger = true;
-                _boxCollider.size = new Vector3(attackDistance, 1f, attackWidth);
+                _boxCollider.size = hitboxSize;
                 _boxCollider.center = Vector3.zero;
             }
 
-            Vector3 localScale = transform.localScale;
-            localScale.x = attackDistance;
-            localScale.z = attackWidth;
-            transform.localScale = localScale;
+            transform.localScale = hitboxSize;
 
             Destroy(gameObject, _lifeTime);
         }
@@ -70,7 +70,7 @@ namespace OmniumLessons
             if (target.CharacterType == _owner.CharacterType)
                 return;
 
-            if (!target.LiveComponent.IsAlive)
+            if (target.LiveComponent == null || !target.LiveComponent.IsAlive)
                 return;
 
             if (_damagedTargets.Contains(target))

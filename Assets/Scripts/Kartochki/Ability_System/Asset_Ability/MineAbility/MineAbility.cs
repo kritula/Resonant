@@ -1,37 +1,78 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace OmniumLessons
 {
     public class MineAbility : AbilityBehaviour
     {
-        [Header("Mine spawn settings")]
-        [SerializeField] private MineObject _minePrefab;
-        [SerializeField] private float _spawnRadius = 3f;
-        [SerializeField] private float _spawnInterval = 5f;
-        [SerializeField] private float _spawnHeight = 0.1f;
-        [SerializeField] private int _maxActiveMines = 5;
+        [SerializeField] private MineAbilityData _data;
+
+        private float _spawnCooldown;
+        private float _spawnDistance;
+        private float _damage;
+        private float _explosionRadius;
+        private float _activationDelay;
+        private float _mineLifeTime;
+
+        private bool _chainReactionEnabled;
+        private float _chainReactionDelay;
+        private float _chainReactionRadius;
 
         private float _spawnTimer;
-        private readonly List<MineObject> _activeMines = new List<MineObject>();
 
         public override void Initialize(PlayerCharacter owner, AbilityUpgradeData abilityData)
         {
             base.Initialize(owner, abilityData);
-            _spawnTimer = _spawnInterval;
+            _spawnTimer = 0f;
+        }
+
+        protected override void ApplyLevel(int level)
+        {
+            if (_data == null)
+            {
+                Debug.LogError($"{nameof(MineAbility)}: Data is missing.", this);
+                return;
+            }
+
+            _spawnCooldown = _data.BaseSpawnCooldown;
+            _spawnDistance = _data.BaseSpawnDistance;
+            _damage = _data.BaseDamage;
+            _explosionRadius = _data.BaseExplosionRadius;
+            _activationDelay = _data.ActivationDelay;
+            _mineLifeTime = _data.MineLifeTime;
+
+            _chainReactionEnabled = false;
+            _chainReactionDelay = 0f;
+            _chainReactionRadius = 0f;
+
+            if (level >= 2)
+            {
+                _spawnCooldown *= _data.Level2CooldownMultiplier;
+            }
+
+            if (level >= 3)
+            {
+                _explosionRadius *= _data.Level3RadiusMultiplier;
+            }
+
+            if (level >= 4)
+            {
+                _damage *= _data.Level4DamageMultiplier;
+            }
+
+            if (level >= 5)
+            {
+                _chainReactionEnabled = _data.EnableChainReaction;
+                _chainReactionDelay = _data.ChainReactionDelay;
+                _chainReactionRadius = _data.ChainReactionRadius;
+            }
         }
 
         public override void OnUpdate()
         {
-            if (_owner == null)
+            if (_owner == null || _data == null)
                 return;
 
-            if (_minePrefab == null)
-                return;
-
-            CleanupDestroyedMines();
-
-            if (_activeMines.Count >= _maxActiveMines)
+            if (_data.MinePrefab == null)
                 return;
 
             if (_spawnTimer > 0f)
@@ -41,39 +82,48 @@ namespace OmniumLessons
             }
 
             SpawnMine();
-            _spawnTimer = _spawnInterval;
+            _spawnTimer = _spawnCooldown;
         }
 
         private void SpawnMine()
         {
-            Vector2 randomCircle = Random.insideUnitCircle * _spawnRadius;
+            Vector3 direction = GetSpawnDirection();
+            Vector3 spawnPosition = _owner.transform.position + direction * _spawnDistance;
+            spawnPosition.y = 0f;
 
-            Vector3 spawnPosition = _owner.transform.position;
-            spawnPosition += new Vector3(randomCircle.x, _spawnHeight, randomCircle.y);
+            MineObject mine = Object.Instantiate(_data.MinePrefab, spawnPosition, Quaternion.identity);
 
-            MineObject mineObject = Object.Instantiate(_minePrefab, spawnPosition, Quaternion.identity);
-            mineObject.Initialize(_owner, this);
-
-            _activeMines.Add(mineObject);
+            mine.Initialize(
+                _owner,
+                _damage,
+                _explosionRadius,
+                _activationDelay,
+                _mineLifeTime,
+                _chainReactionEnabled,
+                _chainReactionDelay,
+                _chainReactionRadius);
         }
 
-        private void CleanupDestroyedMines()
+        private Vector3 GetSpawnDirection()
         {
-            for (int i = _activeMines.Count - 1; i >= 0; i--)
+            float horizontal = Input.GetAxisRaw("Horizontal");
+            float vertical = Input.GetAxisRaw("Vertical");
+
+            Vector3 inputDirection = new Vector3(horizontal, 0f, vertical);
+
+            if (inputDirection.sqrMagnitude > 0.001f)
             {
-                if (_activeMines[i] == null)
-                {
-                    _activeMines.RemoveAt(i);
-                }
+                return inputDirection.normalized;
             }
-        }
 
-        public void RemoveMine(MineObject mineObject)
-        {
-            if (mineObject == null)
-                return;
+            if (_owner.transform.forward.sqrMagnitude > 0.001f)
+            {
+                Vector3 forward = _owner.transform.forward;
+                forward.y = 0f;
+                return forward.normalized;
+            }
 
-            _activeMines.Remove(mineObject);
+            return Vector3.forward;
         }
     }
 }

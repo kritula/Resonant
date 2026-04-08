@@ -27,8 +27,16 @@ namespace OmniumLessons
 
         public override void Update()
         {
+            StatusEffectController?.OnUpdate();
+
             if (!LiveComponent.IsAlive)
                 return;
+
+            if (StatusEffectController != null && StatusEffectController.HasEffect<StunEffect>())
+            {
+                AttackComponent.OnUpdate();
+                return;
+            }
 
             if (CharacterTarget == null)
                 return;
@@ -62,7 +70,7 @@ namespace OmniumLessons
         {
             Vector3 direction = CharacterTarget.transform.position - transform.position;
             direction.y = 0f;
-            direction = direction.normalized;
+            direction.Normalize();
 
             MovableComponent.Move(direction);
 

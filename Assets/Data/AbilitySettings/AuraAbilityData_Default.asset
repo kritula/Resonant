@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f1ab856722dbcd469f6efa89b2a0f38, type: 3}
+  m_Name: AuraAbilityData_Default
+  m_EditorClassIdentifier: 
+  _baseRadius: 2
+  _baseDamage: 5
+  _tickCooldown: 1
+  _slowMultiplier: 0.8
+  _level2RadiusMultiplier: 1.2
+  _level3DamageMultiplier: 1.5
+  _level4TickCooldownMultiplier: 0.75
+  _level5SlowMultiplier: 0.6

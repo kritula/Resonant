@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d1b4120154ab6d4198914108881c843, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _data: {fileID: 11400000, guid: 7a15bc4bd066670488f596745da22919, type: 2}
   _minePrefab: {fileID: 1308049245037499000, guid: 2eba94c2d09f9634ba818883291794c8, type: 3}
   _spawnRadius: 3
   _spawnInterval: 5
   _spawnHeight: 0.1
+  _maxActiveMines: 5

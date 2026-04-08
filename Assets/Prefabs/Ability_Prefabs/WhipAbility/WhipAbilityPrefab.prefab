@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a83ea1edfbcc3c448bcdf0084434830, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _data: {fileID: 11400000, guid: 8c92daf6a1e96524b97aac2678c02d6b, type: 2}
   _whipHitboxPrefab: {fileID: 6539755202006955601, guid: 04fbc162d1a5f0049985b2ecd5c32202, type: 3}
   _attackDistance: 3
   _attackWidth: 1.2

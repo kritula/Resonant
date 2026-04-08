@@ -16,5 +16,5 @@ MonoBehaviour:
   _description: "\u0411\u044C\u0451\u0442 \u043A\u043D\u0443\u0442\u043E\u043C \u0441\u043B\u0435\u0432\u0430
     \u0438\u043B\u0438 \u0441\u043F\u0440\u0430\u0432\u0430"
   _icon: {fileID: 0}
-  _cooldown: 2
+  _maxLevel: 5
   _abilityPrefab: {fileID: 5005347549842815089, guid: ce839765414ba1f4ea2f2239db8c5c7d, type: 3}

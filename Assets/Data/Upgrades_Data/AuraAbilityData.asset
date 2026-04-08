@@ -15,5 +15,5 @@ MonoBehaviour:
   _upgradeName: AuraAbility
   _description: "\u0430\u0443\u0440\u0430 \u0443\u0440\u043E\u043D+\u0437\u0430\u043C\u0435\u0434\u043B\u0435\u043D\u0438\u0435"
   _icon: {fileID: 0}
-  _cooldown: 0
+  _maxLevel: 5
   _abilityPrefab: {fileID: 669650039028011676, guid: 11ed468552c135f418fad70736654eb5, type: 3}

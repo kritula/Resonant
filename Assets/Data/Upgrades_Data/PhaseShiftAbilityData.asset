@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7e29b4e7d1c2334ab8edf263567381d, type: 3}
+  m_Name: PhaseShiftAbilityData
+  m_EditorClassIdentifier: 
+  _upgradeName: "\u041D\u0435\u0443\u044F\u0437\u0432\u0438\u043C\u043E\u0441\u0442\u044C"
+  _description: "\u041D\u0435\u0443\u044F\u0437\u0432\u0438\u043C\u043E\u0441\u0442\u044C"
+  _icon: {fileID: 0}
+  _maxLevel: 5
+  _abilityPrefab: {fileID: 4934169321332855341, guid: 62f2d87d8087f824cb69e86a70b14434, type: 3}
