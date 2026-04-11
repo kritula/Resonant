@@ -29,7 +29,7 @@ namespace OmniumLessons
 
             if (descriptionText != null)
             {
-                descriptionText.text = _upgradeData.Description;
+                descriptionText.text = BuildUpgradeDescription(_upgradeData, player);
             }
 
             if (iconImage != null)
@@ -96,6 +96,42 @@ namespace OmniumLessons
             }
 
             return baseName;
+        }
+
+        private string BuildUpgradeDescription(UpgradeData upgradeData, PlayerCharacter player)
+        {
+            if (upgradeData == null)
+                return string.Empty;
+
+            if (player == null)
+                return upgradeData.Description;
+
+            switch (upgradeData.UpgradeType)
+            {
+                case UpgradeType.Ability:
+                    {
+                        AbilityUpgradeData abilityUpgrade = upgradeData as AbilityUpgradeData;
+
+                        if (abilityUpgrade == null || player.AbilityManager == null)
+                            return upgradeData.Description;
+
+                        int currentLevel = player.AbilityManager.GetAbilityLevel(abilityUpgrade);
+                        return abilityUpgrade.GetNextLevelDescription(currentLevel, abilityUpgrade.MaxLevel);
+                    }
+
+                case UpgradeType.AttackModifier:
+                    {
+                        AttackModifierUpgradeData modifierUpgrade = upgradeData as AttackModifierUpgradeData;
+
+                        if (modifierUpgrade == null || player.AttackModifierController == null)
+                            return upgradeData.Description;
+
+                        int currentLevel = player.AttackModifierController.GetModifierLevel(modifierUpgrade.ModifierType);
+                        return modifierUpgrade.GetNextLevelDescription(currentLevel, modifierUpgrade.MaxLevel);
+                    }
+            }
+
+            return upgradeData.Description;
         }
 
         private void OnSelect()
