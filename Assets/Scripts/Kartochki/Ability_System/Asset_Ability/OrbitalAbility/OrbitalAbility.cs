@@ -7,26 +7,31 @@ namespace OmniumLessons
     {
         [SerializeField] private OrbitalAbilityData _data;
 
-        private readonly List<OrbitalBall> _activeBalls = new List<OrbitalBall>();
+        private readonly List<OrbitalSphere> _activeSpheres = new List<OrbitalSphere>();
 
-        private int _ballCount;
+        private int _sphereCount;
         private float _orbitRadius;
-        private float _rotationSpeed;
+        private float _orbitRotationSpeed;
+        private float _dashDistance;
+        private float _dashSpeed;
         private float _damage;
-        private float _hitCooldownPerTarget;
-        private float _spawnHeight;
-        private float _criticalChance;
-        private float _criticalDamageMultiplier;
+        private float _holdDuration;
+        private float _cooldown;
+        private float _sphereHeight;
+        private float _dashStartDelayStep;
 
-        private float _currentAngle;
+        private bool _pierceEnabled;
+        private int _pierceCount;
+
+        private float _orbitAngle;
 
         public override void Initialize(PlayerCharacter owner, AbilityUpgradeData abilityData)
         {
             base.Initialize(owner, abilityData);
 
-            _currentAngle = 0f;
-            RebuildBalls();
-            UpdateBallsState();
+            _orbitAngle = 0f;
+            RebuildSpheres();
+            ApplyConfigToSpheres();
         }
 
         protected override void ApplyLevel(int level)
@@ -37,39 +42,45 @@ namespace OmniumLessons
                 return;
             }
 
-            _ballCount = _data.BaseBallCount;
+            _sphereCount = _data.BaseSphereCount;
             _orbitRadius = _data.BaseOrbitRadius;
-            _rotationSpeed = _data.BaseRotationSpeed;
+            _orbitRotationSpeed = _data.BaseOrbitRotationSpeed;
+            _dashDistance = _data.BaseDashDistance;
+            _dashSpeed = _data.BaseDashSpeed;
             _damage = _data.BaseDamage;
-            _hitCooldownPerTarget = _data.HitCooldownPerTarget;
-            _spawnHeight = _data.SpawnHeight;
-            _criticalChance = 0f;
-            _criticalDamageMultiplier = 1f;
+            _holdDuration = _data.BaseHoldDuration;
+            _cooldown = _data.BaseCooldown;
+            _sphereHeight = _data.SphereHeight;
+            _dashStartDelayStep = _data.DashStartDelayStep;
+
+            _pierceEnabled = false;
+            _pierceCount = 0;
 
             if (level >= 2)
             {
-                _ballCount = 2;
+                _sphereCount = _data.Level2SphereCount;
             }
 
             if (level >= 3)
             {
-                _orbitRadius *= _data.Level3RadiusMultiplier;
+                _dashDistance *= _data.Level3DashDistanceMultiplier;
             }
 
             if (level >= 4)
             {
-                _rotationSpeed *= _data.Level4RotationSpeedMultiplier;
+                _damage *= _data.Level4DamageMultiplier;
+                _dashSpeed *= _data.Level4DashSpeedMultiplier;
             }
 
             if (level >= 5)
             {
-                _ballCount = _data.Level5BallCount;
-                _criticalChance = _data.CriticalChance;
-                _criticalDamageMultiplier = _data.CriticalDamageMultiplier;
+                _sphereCount = _data.Level5SphereCount;
+                _pierceEnabled = _data.Level5PierceEnabled;
+                _pierceCount = _data.Level5PierceCount;
             }
 
-            RebuildBalls();
-            UpdateBallsState();
+            RebuildSpheres();
+            ApplyConfigToSpheres();
         }
 
         public override void OnUpdate()
@@ -77,100 +88,96 @@ namespace OmniumLessons
             if (_owner == null || _data == null)
                 return;
 
-            if (_activeBalls.Count == 0)
-                return;
-
-            _currentAngle += _rotationSpeed * Time.deltaTime;
-            UpdateBallsPositions();
+            _orbitAngle += _orbitRotationSpeed * Time.deltaTime;
+            UpdateSphereSlots();
         }
 
-        private void RebuildBalls()
+        private void RebuildSpheres()
         {
-            RemoveExtraBalls();
-            CreateMissingBalls();
+            RemoveExtraSpheres();
+            CreateMissingSpheres();
         }
 
-        private void RemoveExtraBalls()
+        private void RemoveExtraSpheres()
         {
-            for (int i = _activeBalls.Count - 1; i >= _ballCount; i--)
+            for (int i = _activeSpheres.Count - 1; i >= _sphereCount; i--)
             {
-                if (_activeBalls[i] != null)
+                if (_activeSpheres[i] != null)
                 {
-                    Destroy(_activeBalls[i].gameObject);
+                    Destroy(_activeSpheres[i].gameObject);
                 }
 
-                _activeBalls.RemoveAt(i);
+                _activeSpheres.RemoveAt(i);
             }
         }
 
-        private void CreateMissingBalls()
+        private void CreateMissingSpheres()
         {
-            if (_data == null || _data.OrbitalBallPrefab == null)
+            if (_data == null || _data.SpherePrefab == null)
                 return;
 
-            while (_activeBalls.Count < _ballCount)
+            while (_activeSpheres.Count < _sphereCount)
             {
-                OrbitalBall newBall = Instantiate(_data.OrbitalBallPrefab, transform);
-                _activeBalls.Add(newBall);
+                OrbitalSphere sphere = Instantiate(_data.SpherePrefab, transform);
+                _activeSpheres.Add(sphere);
             }
         }
 
-        private void UpdateBallsState()
+        private void ApplyConfigToSpheres()
         {
-            for (int i = 0; i < _activeBalls.Count; i++)
+            for (int i = 0; i < _activeSpheres.Count; i++)
             {
-                if (_activeBalls[i] == null)
+                OrbitalSphere sphere = _activeSpheres[i];
+
+                if (sphere == null)
                     continue;
 
-                _activeBalls[i].Initialize(
+                sphere.Initialize(
                     _owner,
                     _damage,
-                    _hitCooldownPerTarget,
-                    _criticalChance,
-                    _criticalDamageMultiplier);
+                    _dashDistance,
+                    _dashSpeed,
+                    _holdDuration,
+                    _cooldown,
+                    _sphereHeight,
+                    _pierceEnabled,
+                    _pierceCount,
+                    i * _dashStartDelayStep);
             }
 
-            UpdateBallsPositions();
+            UpdateSphereSlots();
         }
 
-        private void UpdateBallsPositions()
+        private void UpdateSphereSlots()
         {
-            if (_activeBalls.Count == 0)
+            if (_activeSpheres.Count == 0)
                 return;
 
-            float angleStep = 360f / _activeBalls.Count;
+            float angleStep = 360f / _activeSpheres.Count;
 
-            for (int i = 0; i < _activeBalls.Count; i++)
+            for (int i = 0; i < _activeSpheres.Count; i++)
             {
-                OrbitalBall ball = _activeBalls[i];
+                OrbitalSphere sphere = _activeSpheres[i];
 
-                if (ball == null)
+                if (sphere == null)
                     continue;
 
-                float angle = _currentAngle + angleStep * i;
-                float angleRad = angle * Mathf.Deg2Rad;
-
-                Vector3 localPosition = new Vector3(
-                    Mathf.Cos(angleRad) * _orbitRadius,
-                    _spawnHeight,
-                    Mathf.Sin(angleRad) * _orbitRadius);
-
-                ball.transform.localPosition = localPosition;
-                ball.transform.localRotation = Quaternion.identity;
+                float slotAngle = _orbitAngle + angleStep * i;
+                sphere.SetOrbitData(slotAngle, _orbitRadius);
             }
         }
 
         private void OnDestroy()
         {
-            for (int i = 0; i < _activeBalls.Count; i++)
+            for (int i = 0; i < _activeSpheres.Count; i++)
             {
-                if (_activeBalls[i] != null)
+                if (_activeSpheres[i] != null)
                 {
-                    Destroy(_activeBalls[i].gameObject);
+                    Destroy(_activeSpheres[i].gameObject);
                 }
             }
 
-            _activeBalls.Clear();
+            _activeSpheres.Clear();
         }
     }
 }

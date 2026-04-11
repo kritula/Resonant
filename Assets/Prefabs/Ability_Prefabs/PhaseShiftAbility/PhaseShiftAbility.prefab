@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 8a6ab29ac6be94c49a03e7db3804bea3, type: 2}
   _phaseVisual: {fileID: 7736925711180574951}
-  _phaseExitEffect: {fileID: 4754240715205472190, guid: 80d2db5f6f3be4e4dbd246bd7515d28b, type: 3}
+  _phaseExitEffectPrefab: {fileID: 4754240715205472190, guid: 80d2db5f6f3be4e4dbd246bd7515d28b, type: 3}
   _phaseExitEffectLifetime: 1
 --- !u!1 &7736925711180574951
 GameObject:
@@ -66,7 +66,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2690303803772360888
 Transform:
   m_ObjectHideFlags: 0
@@ -76,8 +76,8 @@ Transform:
   m_GameObject: {fileID: 7736925711180574951}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 19215618823228196}

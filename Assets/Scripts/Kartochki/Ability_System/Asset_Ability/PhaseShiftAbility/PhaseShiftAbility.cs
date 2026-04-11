@@ -10,7 +10,7 @@ namespace OmniumLessons
 
         [Header("Visual Effects")]
         [SerializeField] private GameObject _phaseVisual;
-        [SerializeField] private GameObject _phaseExitEffect;
+        [SerializeField] private GameObject _phaseExitEffectPrefab;
         [SerializeField] private float _phaseExitEffectLifetime = 1f;
 
         private float _phaseDuration;
@@ -181,11 +181,11 @@ namespace OmniumLessons
 
         private void SpawnExitEffect()
         {
-            if (_phaseExitEffect == null || _owner == null)
+            if (_phaseExitEffectPrefab == null || _owner == null)
                 return;
 
             GameObject effect = Object.Instantiate(
-                _phaseExitEffect,
+                _phaseExitEffectPrefab,
                 _owner.transform.position,
                 Quaternion.identity);
 

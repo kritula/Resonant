@@ -1,69 +1,151 @@
+using System.Collections.Generic;
+
 namespace OmniumLessons
 {
     public class AttackModifierController
     {
-        public int PiercingCount { get; private set; }
-        public int RicochetCount { get; private set; }
-        public int AdditionalProjectilesCount { get; private set; }
+        private readonly Dictionary<AttackModifierType, int> _modifierLevels = new Dictionary<AttackModifierType, int>();
+        private readonly Dictionary<AttackModifierType, AttackModifierData> _modifierDataMap = new Dictionary<AttackModifierType, AttackModifierData>();
 
-        public float DamageMultiplier { get; private set; } = 1f;
-        public float AttackCooldownMultiplier { get; private set; } = 1f;
-
-        public void Reset()
+        public int GetModifierLevel(AttackModifierType modifierType)
         {
-            PiercingCount = 0;
-            RicochetCount = 0;
-            AdditionalProjectilesCount = 0;
+            if (_modifierLevels.TryGetValue(modifierType, out int level))
+                return level;
 
-            DamageMultiplier = 1f;
-            AttackCooldownMultiplier = 1f;
+            return 0;
         }
 
-        public void ApplyModifier(AttackModifierUpgradeData upgradeData)
+        public void AddModifier(AttackModifierUpgradeData upgradeData)
         {
             if (upgradeData == null)
                 return;
 
-            switch (upgradeData.AttackModifierType)
+            AttackModifierType modifierType = upgradeData.ModifierType;
+
+            if (modifierType == AttackModifierType.None)
+                return;
+
+            if (upgradeData.ModifierData != null)
             {
-                case AttackModifierType.Piercing:
-                    PiercingCount += (int)upgradeData.ModifierValue;
-                    break;
-
-                case AttackModifierType.Ricochet:
-                    RicochetCount += (int)upgradeData.ModifierValue;
-                    break;
-
-                case AttackModifierType.DamageBoost:
-                    DamageMultiplier += upgradeData.ModifierValue;
-                    break;
-
-                case AttackModifierType.AttackSpeed:
-                    AttackCooldownMultiplier -= upgradeData.ModifierValue;
-                    if (AttackCooldownMultiplier < 0.1f)
-                        AttackCooldownMultiplier = 0.1f;
-                    break;
-
-                case AttackModifierType.AdditionalProjectiles:
-                    AdditionalProjectilesCount += (int)upgradeData.ModifierValue;
-                    break;
+                _modifierDataMap[modifierType] = upgradeData.ModifierData;
             }
+
+            int currentLevel = GetModifierLevel(modifierType);
+
+            if (currentLevel >= upgradeData.MaxLevel)
+                return;
+
+            _modifierLevels[modifierType] = currentLevel + 1;
         }
 
-        public AttackShotData BuildShotData(float baseDamage, PlayerWeaponData weaponData)
+        public bool HasModifier(AttackModifierType modifierType)
         {
-            if (weaponData == null)
-                return null;
+            return GetModifierLevel(modifierType) > 0;
+        }
 
-            float finalDamage = baseDamage * DamageMultiplier;
+        public bool IsModifierMaxLevel(AttackModifierType modifierType)
+        {
+            return GetModifierLevel(modifierType) >= 5;
+        }
 
-            return new AttackShotData(
-                finalDamage,
-                PiercingCount,
-                RicochetCount,
-                AdditionalProjectilesCount,
-                weaponData.RicochetRadius,
-                AttackCooldownMultiplier);
+        public void Clear()
+        {
+            _modifierLevels.Clear();
+            _modifierDataMap.Clear();
+        }
+
+        public AttackShotData BuildShotData()
+        {
+            AttackShotData shotData = new AttackShotData
+            {
+                ProjectileCount = 1,
+                SpreadAngle = 0f,
+                AttackCooldownMultiplier = 1f,
+
+                PierceCount = 0,
+                InfinitePierce = false,
+                PierceDamageFalloff = false,
+                PierceDamageFalloffPerTarget = 0f,
+                PierceBonusAfterFirstPierce = false,
+                PierceBonusMultiplierAfterFirstPierce = 1f,
+
+                RicochetCount = 0,
+                RicochetSearchRadius = 5f,
+                RicochetDamageMultiplier = 0.85f,
+                RicochetNoDamageFalloff = false,
+                RicochetHoming = false
+            };
+
+            ApplyPiercing(ref shotData);
+            ApplyRicochet(ref shotData);
+            ApplyDoubleShot(ref shotData);
+
+            return shotData;
+        }
+
+        private void ApplyPiercing(ref AttackShotData shotData)
+        {
+            int level = GetModifierLevel(AttackModifierType.Piercing);
+
+            if (level <= 0)
+                return;
+
+            if (!_modifierDataMap.TryGetValue(AttackModifierType.Piercing, out AttackModifierData baseData))
+                return;
+
+            PiercingModifierData data = baseData as PiercingModifierData;
+
+            if (data == null)
+                return;
+
+            shotData.PierceCount = data.GetPierceCount(level);
+            shotData.InfinitePierce = data.HasInfinitePierce(level);
+            shotData.PierceDamageFalloff = data.HasDamageFalloff(level);
+            shotData.PierceDamageFalloffPerTarget = data.GetDamageFalloffPerTarget(level);
+            shotData.PierceBonusAfterFirstPierce = data.HasBonusAfterFirstPierce(level);
+            shotData.PierceBonusMultiplierAfterFirstPierce = data.GetBonusMultiplierAfterFirstPierce(level);
+        }
+
+        private void ApplyRicochet(ref AttackShotData shotData)
+        {
+            int level = GetModifierLevel(AttackModifierType.Ricochet);
+
+            if (level <= 0)
+                return;
+
+            if (!_modifierDataMap.TryGetValue(AttackModifierType.Ricochet, out AttackModifierData baseData))
+                return;
+
+            RicochetModifierData data = baseData as RicochetModifierData;
+
+            if (data == null)
+                return;
+
+            shotData.RicochetCount = data.GetRicochetCount(level);
+            shotData.RicochetSearchRadius = data.GetSearchRadius(level);
+            shotData.RicochetDamageMultiplier = data.GetDamageMultiplier(level);
+            shotData.RicochetNoDamageFalloff = data.HasNoDamageFalloff(level);
+            shotData.RicochetHoming = data.HasHoming(level);
+        }
+
+        private void ApplyDoubleShot(ref AttackShotData shotData)
+        {
+            int level = GetModifierLevel(AttackModifierType.DoubleShot);
+
+            if (level <= 0)
+                return;
+
+            if (!_modifierDataMap.TryGetValue(AttackModifierType.DoubleShot, out AttackModifierData baseData))
+                return;
+
+            DoubleShotModifierData data = baseData as DoubleShotModifierData;
+
+            if (data == null)
+                return;
+
+            shotData.ProjectileCount = data.GetProjectileCount(level);
+            shotData.SpreadAngle = data.GetSpreadAngle(level);
+            shotData.AttackCooldownMultiplier = data.GetAttackCooldownMultiplier(level);
         }
     }
 }

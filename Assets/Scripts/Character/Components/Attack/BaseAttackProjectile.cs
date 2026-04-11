@@ -5,37 +5,50 @@ namespace OmniumLessons
 {
     public class BaseAttackProjectile : MonoBehaviour
     {
-        private Character _owner;
-        private float _damage;
+        private PlayerCharacter _owner;
+        private Vector3 _direction;
+        private AttackShotData _shotData;
+
+        private float _baseDamage;
         private float _speed;
         private float _lifeTime;
-        private Vector3 _direction;
+
+        private int _piercedTargetsCount;
+        private int _remainingRicochets;
+
+        private bool _isRicochetBranch;
+        [SerializeField] private RicochetArcEffect _ricochetArcEffectPrefab;
+
+        private Character _homingTarget;
+        private bool _isHoming;
+
+        private readonly HashSet<Character> _damagedTargets = new HashSet<Character>();
         private bool _isInitialized;
 
-        private int _remainingPiercingCount;
-        private int _remainingRicochetCount;
-        private float _ricochetRadius;
-
-        private readonly List<Character> _damagedCharacters = new List<Character>();
-
-        public void Initialize(
-            Character owner,
-            float damage,
-            float speed,
-            float lifeTime,
-            Vector3 direction,
-            int piercingCount,
-            int ricochetCount,
-            float ricochetRadius)
+        public void Initialize(PlayerCharacter owner, Vector3 direction, AttackShotData shotData)
         {
             _owner = owner;
-            _damage = damage;
-            _speed = speed;
-            _lifeTime = lifeTime;
             _direction = direction.normalized;
-            _remainingPiercingCount = piercingCount;
-            _remainingRicochetCount = ricochetCount;
-            _ricochetRadius = ricochetRadius;
+            _shotData = shotData;
+
+            PlayerWeaponData weaponData = owner.CharacterData.WeaponData as PlayerWeaponData;
+
+            if (weaponData == null)
+                return;
+
+            _baseDamage = weaponData.Damage;
+            _speed = weaponData.ProjectileSpeed;
+            _lifeTime = weaponData.ProjectileLifeTime;
+
+            _remainingRicochets = shotData.RicochetCount;
+            _piercedTargetsCount = 0;
+
+            _isRicochetBranch = false;
+
+            _isHoming = false;
+            _homingTarget = null;
+
+            _damagedTargets.Clear();
             _isInitialized = true;
 
             Destroy(gameObject, _lifeTime);
@@ -46,25 +59,39 @@ namespace OmniumLessons
             if (!_isInitialized)
                 return;
 
+            UpdateDirection();
+
             transform.position += _direction * _speed * Time.deltaTime;
 
-            if (_direction != Vector3.zero)
+            if (_direction.sqrMagnitude > 0.001f)
             {
-                transform.rotation = Quaternion.LookRotation(_direction);
+                transform.forward = _direction;
+            }
+        }
+
+        private void UpdateDirection()
+        {
+            if (!_isHoming)
+                return;
+
+            if (_homingTarget == null || !_homingTarget.LiveComponent.IsAlive)
+                return;
+
+            Vector3 dir = _homingTarget.transform.position - transform.position;
+            dir.y = 0f;
+
+            if (dir.sqrMagnitude > 0.001f)
+            {
+                _direction = dir.normalized;
             }
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!_isInitialized)
-                return;
-
             Character target = other.GetComponent<Character>();
 
             if (target == null)
-            {
                 target = other.GetComponentInParent<Character>();
-            }
 
             if (target == null)
                 return;
@@ -72,90 +99,174 @@ namespace OmniumLessons
             if (target == _owner)
                 return;
 
-            if (_owner != null && target.CharacterType == _owner.CharacterType)
+            if (target.CharacterType == _owner.CharacterType)
                 return;
 
             if (!target.LiveComponent.IsAlive)
                 return;
 
-            if (_damagedCharacters.Contains(target))
+            if (_damagedTargets.Contains(target))
                 return;
 
-            _damagedCharacters.Add(target);
-            target.LiveComponent.GetDamage(_damage);
+            _damagedTargets.Add(target);
 
-            if (_remainingPiercingCount > 0)
+            float damage = CalculateDamage();
+            target.LiveComponent.GetDamage(damage);
+
+            TrySpawnRicochetProjectile(target);
+
+            if (_isRicochetBranch)
             {
-                _remainingPiercingCount--;
+                Destroy(gameObject);
                 return;
             }
 
-            if (_remainingRicochetCount > 0)
+            if (ShouldDestroyAfterHit())
             {
-                Character ricochetTarget = FindRicochetTarget(target);
-
-                if (ricochetTarget != null)
-                {
-                    Vector3 newDirection = ricochetTarget.transform.position - transform.position;
-                    newDirection.y = 0f;
-
-                    if (newDirection != Vector3.zero)
-                    {
-                        _direction = newDirection.normalized;
-                        _remainingRicochetCount--;
-                        return;
-                    }
-                }
+                Destroy(gameObject);
+                return;
             }
 
-            Destroy(gameObject);
+            _piercedTargetsCount++;
         }
 
-        private Character FindRicochetTarget(Character currentTarget)
+        private float CalculateDamage()
         {
-            if (_owner == null)
-                return null;
+            float damage = _baseDamage;
 
-            Character result = null;
-            float nearestDistance = float.MaxValue;
+            if (_shotData.PierceBonusAfterFirstPierce && _piercedTargetsCount >= 1)
+                damage *= _shotData.PierceBonusMultiplierAfterFirstPierce;
 
-            List<Character> activeCharacters = GameManager.Instance.CharacterFactory.ActiveCharacters;
-
-            for (int i = 0; i < activeCharacters.Count; i++)
+            if (_shotData.PierceDamageFalloff && _piercedTargetsCount > 0)
             {
-                Character candidate = activeCharacters[i];
-
-                if (candidate == null)
-                    continue;
-
-                if (candidate == currentTarget)
-                    continue;
-
-                if (candidate == _owner)
-                    continue;
-
-                if (candidate.CharacterType == _owner.CharacterType)
-                    continue;
-
-                if (!candidate.LiveComponent.IsAlive)
-                    continue;
-
-                if (_damagedCharacters.Contains(candidate))
-                    continue;
-
-                float distance = Vector3.Distance(currentTarget.transform.position, candidate.transform.position);
-
-                if (distance > _ricochetRadius)
-                    continue;
-
-                if (distance < nearestDistance)
-                {
-                    nearestDistance = distance;
-                    result = candidate;
-                }
+                float multiplier = 1f - (_shotData.PierceDamageFalloffPerTarget * _piercedTargetsCount);
+                multiplier = Mathf.Max(0.1f, multiplier);
+                damage *= multiplier;
             }
 
-            return result;
+            return damage;
+        }
+
+        private void TrySpawnRicochetProjectile(Character hitTarget)
+        {
+            if (_remainingRicochets <= 0)
+                return;
+
+            Character nextTarget = FindRicochetTarget(hitTarget);
+
+            if (nextTarget == null)
+                return;
+
+            Vector3 startPosition = hitTarget.transform.position;
+            Vector3 directionToTarget = nextTarget.transform.position - startPosition;
+            directionToTarget.y = 0f;
+
+            if (directionToTarget.sqrMagnitude <= 0.001f)
+                return;
+
+            directionToTarget.Normalize();
+
+            if (_ricochetArcEffectPrefab != null)
+            {
+                RicochetArcEffect arcEffect = Instantiate(
+                    _ricochetArcEffectPrefab,
+                    startPosition,
+                    Quaternion.identity);
+
+                arcEffect.Initialize(startPosition, nextTarget.transform.position);
+            }
+
+            float damageMultiplier = _shotData.RicochetNoDamageFalloff ? 1f : _shotData.RicochetDamageMultiplier;
+
+            BaseAttackProjectile ricochetProjectile = Instantiate(
+                this,
+                startPosition,
+                Quaternion.LookRotation(directionToTarget, Vector3.up));
+
+            ricochetProjectile.InitializeRicochet(
+                _owner,
+                directionToTarget,
+                _shotData,
+                _baseDamage,
+                _remainingRicochets - 1,
+                damageMultiplier,
+                _shotData.RicochetHoming,
+                nextTarget);
+        }
+
+        private void InitializeRicochet(
+            PlayerCharacter owner,
+            Vector3 direction,
+            AttackShotData shotData,
+            float baseDamage,
+            int remainingRicochets,
+            float damageMultiplier,
+            bool homing,
+            Character target)
+        {
+            _owner = owner;
+            _direction = direction;
+            _shotData = shotData;
+
+            PlayerWeaponData weaponData = owner.CharacterData.WeaponData as PlayerWeaponData;
+
+            _baseDamage = baseDamage * damageMultiplier;
+            _speed = weaponData.ProjectileSpeed;
+            _lifeTime = weaponData.ProjectileLifeTime;
+
+            _remainingRicochets = remainingRicochets;
+            _isRicochetBranch = true;
+
+            _isHoming = homing;
+            _homingTarget = homing ? target : null;
+
+            _damagedTargets.Clear();
+            _isInitialized = true;
+
+            Destroy(gameObject, _lifeTime);
+        }
+
+        private Character FindRicochetTarget(Character hitTarget)
+        {
+            var list = GameManager.Instance.CharacterFactory.ActiveCharacters;
+
+            Character best = null;
+            float bestDist = _shotData.RicochetSearchRadius * _shotData.RicochetSearchRadius;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                var c = list[i];
+
+                if (c == null || c == hitTarget || c == _owner)
+                    continue;
+
+                if (c.CharacterType == _owner.CharacterType)
+                    continue;
+
+                if (!c.LiveComponent.IsAlive)
+                    continue;
+
+                float dist = (c.transform.position - hitTarget.transform.position).sqrMagnitude;
+
+                if (dist > bestDist)
+                    continue;
+
+                bestDist = dist;
+                best = c;
+            }
+
+            return best;
+        }
+
+        private bool ShouldDestroyAfterHit()
+        {
+            if (_shotData.InfinitePierce)
+                return false;
+
+            if (_shotData.PierceCount <= 0)
+                return true;
+
+            return _piercedTargetsCount >= _shotData.PierceCount;
         }
     }
 }

@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3dfbc36b780c394b84b9cb33bcae957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _ricochetArcEffectPrefab: {fileID: 2624446775896521262, guid: 0682c6c7986c87d4c8897dd026137631, type: 3}
 --- !u!135 &5497774900232521356
 SphereCollider:
   m_ObjectHideFlags: 0

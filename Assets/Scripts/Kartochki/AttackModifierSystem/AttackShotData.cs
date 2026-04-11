@@ -1,28 +1,22 @@
 namespace OmniumLessons
 {
-    public class AttackShotData
+    public struct AttackShotData
     {
-        public float FinalDamage { get; private set; }
-        public int PiercingCount { get; private set; }
-        public int RicochetCount { get; private set; }
-        public int AdditionalProjectilesCount { get; private set; }
-        public float RicochetRadius { get; private set; }
-        public float AttackCooldownMultiplier { get; private set; }
+        public int ProjectileCount;
+        public float SpreadAngle;
+        public float AttackCooldownMultiplier;
 
-        public AttackShotData(
-            float finalDamage,
-            int piercingCount,
-            int ricochetCount,
-            int additionalProjectilesCount,
-            float ricochetRadius,
-            float attackCooldownMultiplier)
-        {
-            FinalDamage = finalDamage;
-            PiercingCount = piercingCount;
-            RicochetCount = ricochetCount;
-            AdditionalProjectilesCount = additionalProjectilesCount;
-            RicochetRadius = ricochetRadius;
-            AttackCooldownMultiplier = attackCooldownMultiplier;
-        }
+        public int PierceCount;
+        public bool InfinitePierce;
+        public bool PierceDamageFalloff;
+        public float PierceDamageFalloffPerTarget;
+        public bool PierceBonusAfterFirstPierce;
+        public float PierceBonusMultiplierAfterFirstPierce;
+
+        public int RicochetCount;
+        public float RicochetDamageMultiplier;
+        public bool RicochetNoDamageFalloff;
+        public float RicochetSearchRadius;
+        public bool RicochetHoming;
     }
 }

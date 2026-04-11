@@ -15,5 +15,6 @@ MonoBehaviour:
   _upgradeName: Ricochet
   _description: Projectile ricochets to another enemy
   _icon: {fileID: 0}
-  _attackModifierType: 2
-  _modifierValue: 1
+  _modifierType: 2
+  _maxLevel: 5
+  _modifierData: {fileID: 11400000, guid: 295fb5f7ef902f64681a71fe7a6fe8fe, type: 2}

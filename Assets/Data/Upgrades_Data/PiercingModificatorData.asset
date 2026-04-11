@@ -15,5 +15,6 @@ MonoBehaviour:
   _upgradeName: Piercing
   _description: "\u043F\u0440\u043E\u0431\u0438\u0432\u0430\u043D\u0438\u0435"
   _icon: {fileID: 0}
-  _attackModifierType: 1
-  _modifierValue: 1
+  _modifierType: 1
+  _maxLevel: 5
+  _modifierData: {fileID: 11400000, guid: 4797a945c28f98b42bac4ebe348ed55c, type: 2}

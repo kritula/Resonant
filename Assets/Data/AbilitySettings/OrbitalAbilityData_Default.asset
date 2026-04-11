@@ -12,15 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe068f47ef176a941a60292e269c4c7f, type: 3}
   m_Name: OrbitalAbilityData_Default
   m_EditorClassIdentifier: 
-  _orbitalBallPrefab: {fileID: 4126899224956864611, guid: 72a85639bd12fef42afb9a5d1e877229, type: 3}
-  _baseBallCount: 1
-  _baseOrbitRadius: 1.5
-  _baseRotationSpeed: 120
+  _spherePrefab: {fileID: 4126899224956864611, guid: 72a85639bd12fef42afb9a5d1e877229, type: 3}
+  _baseSphereCount: 2
+  _baseOrbitRadius: 1.8
+  _baseOrbitRotationSpeed: 90
+  _baseDashDistance: 3.5
+  _baseDashSpeed: 14
   _baseDamage: 10
-  _hitCooldownPerTarget: 0.5
-  _spawnHeight: 0.5
-  _level3RadiusMultiplier: 1.35
-  _level4RotationSpeedMultiplier: 1.3
-  _level5BallCount: 4
-  _criticalChance: 0.25
-  _criticalDamageMultiplier: 2
+  _baseHoldDuration: 0.25
+  _baseCooldown: 1.8
+  _sphereHeight: 0.5
+  _dashStartDelayStep: 0.15
+  _level2SphereCount: 4
+  _level3DashDistanceMultiplier: 1.4
+  _level4DamageMultiplier: 1.4
+  _level4DashSpeedMultiplier: 1.35
+  _level5SphereCount: 8
+  _level5PierceEnabled: 1
+  _level5PierceCount: 999

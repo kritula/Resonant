@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1fe48e2dbe2fe6448befb34398a7578, type: 3}
+  m_Name: RicochetModifierData
+  m_EditorClassIdentifier: 
+  _modifierType: 2
+  _level1RicochetCount: 1
+  _level1SearchRadius: 5
+  _level1DamageMultiplier: 0.85
+  _level1Homing: 0
+  _level2RicochetCount: 2
+  _level2SearchRadius: 5
+  _level2DamageMultiplier: 0.85
+  _level2Homing: 0
+  _level3RicochetCount: 2
+  _level3SearchRadius: 5
+  _level3DamageMultiplier: 1
+  _level3Homing: 0
+  _level4RicochetCount: 3
+  _level4SearchRadius: 5
+  _level4DamageMultiplier: 1
+  _level4Homing: 0
+  _level5RicochetCount: 3
+  _level5SearchRadius: 7
+  _level5DamageMultiplier: 1
+  _level5Homing: 1

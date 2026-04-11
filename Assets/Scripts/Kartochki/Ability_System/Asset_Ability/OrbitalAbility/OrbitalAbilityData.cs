@@ -5,39 +5,61 @@ namespace OmniumLessons
     [CreateAssetMenu(fileName = "OrbitalAbilityData", menuName = "Abilities/Orbital Data")]
     public class OrbitalAbilityData : ScriptableObject
     {
+        [Header("Prefabs")]
+        [SerializeField] private OrbitalSphere _spherePrefab;
+
         [Header("Base (Lv1)")]
-        [SerializeField] private OrbitalBall _orbitalBallPrefab;
-        [SerializeField] private int _baseBallCount = 1;
-        [SerializeField] private float _baseOrbitRadius = 1.5f;
-        [SerializeField] private float _baseRotationSpeed = 120f;
+        [SerializeField] private int _baseSphereCount = 2;
+        [SerializeField] private float _baseOrbitRadius = 1.8f;
+        [SerializeField] private float _baseOrbitRotationSpeed = 90f;
+        [SerializeField] private float _baseDashDistance = 3.5f;
+        [SerializeField] private float _baseDashSpeed = 14f;
         [SerializeField] private float _baseDamage = 10f;
-        [SerializeField] private float _hitCooldownPerTarget = 0.5f;
-        [SerializeField] private float _spawnHeight = 0.5f;
+        [SerializeField] private float _baseHoldDuration = 0.25f;
+        [SerializeField] private float _baseCooldown = 1.8f;
+        [SerializeField] private float _sphereHeight = 0.5f;
+
+        [Header("Wave / Desync")]
+        [SerializeField] private float _dashStartDelayStep = 0.15f;
+
+        [Header("Level 2")]
+        [SerializeField] private int _level2SphereCount = 4;
 
         [Header("Level 3")]
-        [SerializeField] private float _level3RadiusMultiplier = 1.35f;
+        [SerializeField] private float _level3DashDistanceMultiplier = 1.4f;
 
         [Header("Level 4")]
-        [SerializeField] private float _level4RotationSpeedMultiplier = 1.4f;
+        [SerializeField] private float _level4DamageMultiplier = 1.4f;
+        [SerializeField] private float _level4DashSpeedMultiplier = 1.35f;
 
         [Header("Level 5")]
-        [SerializeField] private int _level5BallCount = 4;
-        [SerializeField] private float _criticalChance = 0.25f;
-        [SerializeField] private float _criticalDamageMultiplier = 2f;
+        [SerializeField] private int _level5SphereCount = 8;
+        [SerializeField] private bool _level5PierceEnabled = true;
+        [SerializeField] private int _level5PierceCount = 999;
 
-        public OrbitalBall OrbitalBallPrefab => _orbitalBallPrefab;
-        public int BaseBallCount => _baseBallCount;
+        public OrbitalSphere SpherePrefab => _spherePrefab;
+
+        public int BaseSphereCount => _baseSphereCount;
         public float BaseOrbitRadius => _baseOrbitRadius;
-        public float BaseRotationSpeed => _baseRotationSpeed;
+        public float BaseOrbitRotationSpeed => _baseOrbitRotationSpeed;
+        public float BaseDashDistance => _baseDashDistance;
+        public float BaseDashSpeed => _baseDashSpeed;
         public float BaseDamage => _baseDamage;
-        public float HitCooldownPerTarget => _hitCooldownPerTarget;
-        public float SpawnHeight => _spawnHeight;
+        public float BaseHoldDuration => _baseHoldDuration;
+        public float BaseCooldown => _baseCooldown;
+        public float SphereHeight => _sphereHeight;
 
-        public float Level3RadiusMultiplier => _level3RadiusMultiplier;
-        public float Level4RotationSpeedMultiplier => _level4RotationSpeedMultiplier;
+        public float DashStartDelayStep => _dashStartDelayStep;
 
-        public int Level5BallCount => _level5BallCount;
-        public float CriticalChance => _criticalChance;
-        public float CriticalDamageMultiplier => _criticalDamageMultiplier;
+        public int Level2SphereCount => _level2SphereCount;
+
+        public float Level3DashDistanceMultiplier => _level3DashDistanceMultiplier;
+
+        public float Level4DamageMultiplier => _level4DamageMultiplier;
+        public float Level4DashSpeedMultiplier => _level4DashSpeedMultiplier;
+
+        public int Level5SphereCount => _level5SphereCount;
+        public bool Level5PierceEnabled => _level5PierceEnabled;
+        public int Level5PierceCount => _level5PierceCount;
     }
 }

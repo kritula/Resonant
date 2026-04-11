@@ -42,6 +42,9 @@ namespace OmniumLessons
             if (upgradeData == null)
                 return false;
 
+            if (player == null)
+                return true;
+
             if (upgradeData.UpgradeType == UpgradeType.Ability)
             {
                 AbilityUpgradeData abilityUpgrade = upgradeData as AbilityUpgradeData;
@@ -49,11 +52,25 @@ namespace OmniumLessons
                 if (abilityUpgrade == null)
                     return false;
 
-                if (player == null || player.AbilityManager == null)
-                    return true;
-
-                if (player.AbilityManager.IsAbilityMaxLevel(abilityUpgrade))
+                if (player.AbilityManager != null &&
+                    player.AbilityManager.IsAbilityMaxLevel(abilityUpgrade))
+                {
                     return false;
+                }
+            }
+
+            if (upgradeData.UpgradeType == UpgradeType.AttackModifier)
+            {
+                AttackModifierUpgradeData modifierUpgrade = upgradeData as AttackModifierUpgradeData;
+
+                if (modifierUpgrade == null)
+                    return false;
+
+                if (player.AttackModifierController != null &&
+                    player.AttackModifierController.IsModifierMaxLevel(modifierUpgrade.ModifierType))
+                {
+                    return false;
+                }
             }
 
             return true;

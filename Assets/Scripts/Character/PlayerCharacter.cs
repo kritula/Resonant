@@ -58,13 +58,16 @@ namespace OmniumLessons
             if (upgradeData == null)
                 return;
 
-            AttackModifierController.ApplyModifier(upgradeData);
+            if (AttackModifierController == null)
+                return;
+
+            AttackModifierController.AddModifier(upgradeData);
         }
 
         public void ClearAbilities()
         {
             AbilityManager?.ClearAbilities();
-            AttackModifierController?.Reset();
+            AttackModifierController?.Clear();
         }
 
         public override void Update()

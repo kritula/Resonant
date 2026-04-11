@@ -4,31 +4,15 @@ namespace OmniumLessons
 {
     public class ProjectileAttackComponent : IAttackComponent
     {
-        public float Damage { get; private set; }
-
         private CharacterData _characterData;
-        private float _lockDamageTime;
-        private float _lockDamageTimeMax;
+        private float _attackTimer;
 
         public void Initialize(CharacterData characterData)
         {
             _characterData = characterData;
-
-            if (_characterData != null && _characterData.WeaponData != null)
-            {
-                Damage = _characterData.WeaponData.Damage;
-                _lockDamageTimeMax = _characterData.WeaponData.AttackCooldown;
-            }
-            else
-            {
-                Damage = 5f;
-                _lockDamageTimeMax = 1f;
-            }
-
-            _lockDamageTime = 0f;
         }
 
-        public void MakeDamage(Character damageTarget)
+        public void MakeDamage(Character target)
         {
             if (_characterData == null)
                 return;
@@ -36,89 +20,73 @@ namespace OmniumLessons
             if (_characterData.WeaponData == null)
                 return;
 
-            if (_lockDamageTime > 0f)
+            if (target == null || target.LiveComponent == null || !target.LiveComponent.IsAlive)
                 return;
 
-            if (damageTarget == null)
+            PlayerCharacter owner = _characterData.GetComponent<PlayerCharacter>();
+
+            if (owner == null)
                 return;
 
-            if (!damageTarget.LiveComponent.IsAlive)
+            AttackShotData shotData = owner.AttackModifierController.BuildShotData();
+
+            float finalCooldown = _characterData.WeaponData.AttackCooldown * shotData.AttackCooldownMultiplier;
+
+            if (_attackTimer > 0f)
                 return;
 
-            PlayerWeaponData playerWeaponData = _characterData.WeaponData as PlayerWeaponData;
-            if (playerWeaponData == null)
-                return;
-
-            BaseAttackProjectile projectilePrefab = playerWeaponData.ProjectilePrefab;
-            if (projectilePrefab == null)
-                return;
-
-            Character ownerCharacter = _characterData.Character;
-            if (ownerCharacter == null)
-                return;
-
-            PlayerCharacter playerCharacter = ownerCharacter as PlayerCharacter;
-            if (playerCharacter == null)
-                return;
-
-            AttackShotData shotData = playerCharacter.AttackModifierController.BuildShotData(Damage, playerWeaponData);
-            if (shotData == null)
-                return;
-
-            int projectileCount = 1 + shotData.AdditionalProjectilesCount;
-
-            for (int i = 0; i < projectileCount; i++)
-            {
-                Vector3 spawnPosition = GetSpawnPosition(
-                    i,
-                    projectileCount,
-                    playerWeaponData.ProjectileSpawnOffset,
-                    playerWeaponData.ProjectileSpawnHeight);
-
-                Vector3 direction = damageTarget.transform.position - spawnPosition;
-                direction.y = 0f;
-
-                if (direction == Vector3.zero)
-                    continue;
-
-                BaseAttackProjectile projectile = Object.Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
-
-                projectile.Initialize(
-                    ownerCharacter,
-                    shotData.FinalDamage,
-                    playerWeaponData.ProjectileSpeed,
-                    playerWeaponData.ProjectileLifeTime,
-                    direction.normalized,
-                    shotData.PiercingCount,
-                    shotData.RicochetCount,
-                    shotData.RicochetRadius);
-            }
-
-            _lockDamageTime = _lockDamageTimeMax * shotData.AttackCooldownMultiplier;
+            SpawnProjectiles(owner, target, shotData);
+            _attackTimer = finalCooldown;
         }
 
         public void OnUpdate()
         {
-            if (_lockDamageTime > 0f)
+            if (_attackTimer > 0f)
             {
-                _lockDamageTime -= Time.deltaTime;
+                _attackTimer -= Time.deltaTime;
             }
         }
 
-        private Vector3 GetSpawnPosition(int projectileIndex, int projectileCount, float spawnOffset, float spawnHeight)
+        private void SpawnProjectiles(PlayerCharacter owner, Character target, AttackShotData shotData)
         {
-            Vector3 basePosition = _characterData.CharacterTransform.position + Vector3.up * spawnHeight;
+            PlayerWeaponData weaponData = _characterData.WeaponData as PlayerWeaponData;
 
-            if (projectileCount <= 1)
-                return basePosition;
+            if (weaponData == null || weaponData.ProjectilePrefab == null)
+                return;
 
-            Transform ownerTransform = _characterData.CharacterTransform;
-            Vector3 right = ownerTransform.right;
+            Vector3 baseDirection = (target.transform.position - owner.transform.position).normalized;
+            baseDirection.y = 0f;
 
-            float centerOffset = (projectileCount - 1) * 0.5f;
-            float horizontalOffset = (projectileIndex - centerOffset) * spawnOffset;
+            if (baseDirection.sqrMagnitude <= 0.001f)
+                return;
 
-            return basePosition + right * horizontalOffset;
+            int projectileCount = Mathf.Max(1, shotData.ProjectileCount);
+
+            for (int i = 0; i < projectileCount; i++)
+            {
+                float angleOffset = CalculateSpreadOffset(i, projectileCount, shotData.SpreadAngle);
+                Vector3 shotDirection = Quaternion.Euler(0f, angleOffset, 0f) * baseDirection;
+
+                Vector3 spawnPosition = owner.transform.position + Vector3.up * weaponData.ProjectileSpawnHeight;
+
+                BaseAttackProjectile projectile = Object.Instantiate(
+                    weaponData.ProjectilePrefab,
+                    spawnPosition,
+                    Quaternion.LookRotation(shotDirection, Vector3.up));
+
+                projectile.Initialize(owner, shotDirection, shotData);
+            }
+        }
+
+        private float CalculateSpreadOffset(int index, int totalCount, float spreadAngle)
+        {
+            if (totalCount <= 1)
+                return 0f;
+
+            float halfSpread = spreadAngle * 0.5f;
+            float step = spreadAngle / (totalCount - 1);
+
+            return -halfSpread + step * index;
         }
     }
 }
