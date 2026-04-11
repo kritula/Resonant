@@ -131,13 +131,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b8f6c14a74a29c4c89373b08cd4a6b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultSpeed: 3
+  _defaultSpeed: 5
   _characterController: {fileID: 4122229871219812238}
   _characterTransform: {fileID: 3007017196735004018}
   _weaponData: {fileID: 11400000, guid: c848d20648b65ff4aaf01b350c045916, type: 2}
   _maxHealth: 10
   _resonanceCost: 1
-  _experienceReward: 60
+  _experienceReward: 30
 --- !u!143 &4122229871219812238
 CharacterController:
   m_ObjectHideFlags: 0

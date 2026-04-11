@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d32cf709d1031ad48b631b1deb9cf237, type: 3}
+  m_Name: Wave_03_MixedPack
+  m_EditorClassIdentifier: 
+  _waveName: Mixed Pack
+  _startTimeSeconds: 90
+  _endTimeSeconds: 150
+  _minimumAliveEnemies: 24
+  _maximumAliveEnemies: 40
+  _spawnInterval: 0.75
+  _spawnPerTick: 2
+  _useEmergencyFill: 1
+  _emergencyThreshold: 8
+  _emergencySpawnCount: 5
+  _useBurstSpawn: 1
+  _burstInterval: 10
+  _burstSpawnCount: 6
+  _enemies:
+  - _characterType: 2
+    _weight: 7
+  - _characterType: 3
+    _weight: 5
+  - _characterType: 4
+    _weight: 2

@@ -1,46 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace OmniumLessons
 {
-    [Serializable]
-    public class EnemySpawnSettings
-    {
-        public CharacterType CharacterType;
-        public float SpawnStartTime;
-    }
-
     public class CharacterSpawnController
     {
         private CharacterFactory CharacterFactory => GameManager.Instance.CharacterFactory;
         private GameData GameData => GameManager.Instance.GameData;
 
-        private float _spawnTimerEnemy;
-
-        private int _baseMaxEnemies = 2;
-        private int _enemiesAddedPerStep = 1;
-        private float _enemyGrowthIntervalSeconds = 10f;
-
         private bool _isActiveSpawn;
 
-        private List<EnemySpawnSettings> _enemySpawnSettings = new List<EnemySpawnSettings>
-        {
-            new EnemySpawnSettings { CharacterType = CharacterType.DefaultEnemy, SpawnStartTime = 0f },
-            new EnemySpawnSettings { CharacterType = CharacterType.FastEnemy, SpawnStartTime = 15f },
-            new EnemySpawnSettings { CharacterType = CharacterType.TankEnemy, SpawnStartTime = 30f }
-        };
+        private SpawnWaveData _currentWave;
+
+        private float _regularSpawnTimer;
+        private float _burstSpawnTimer;
 
         public void StartSpawn()
         {
             _isActiveSpawn = true;
-            _spawnTimerEnemy = 0f;
+            _currentWave = null;
+            _regularSpawnTimer = 0f;
+            _burstSpawnTimer = 0f;
         }
 
         public void StopSpawn()
         {
             _isActiveSpawn = false;
+            _currentWave = null;
+            _regularSpawnTimer = 0f;
+            _burstSpawnTimer = 0f;
         }
 
         public void OnUpdate(float deltaTime)
@@ -48,49 +37,173 @@ namespace OmniumLessons
             if (!_isActiveSpawn)
                 return;
 
-            _spawnTimerEnemy += deltaTime;
-
-            float gameTime = GameManager.Instance.GameTime;
-            int growthSteps = (int)(gameTime / _enemyGrowthIntervalSeconds);
-            int maxEnemiesNow = _baseMaxEnemies + growthSteps * _enemiesAddedPerStep;
-
-            int currentEnemies = CountActiveEnemies();
-            if (currentEnemies >= maxEnemiesNow)
+            if (CharacterFactory.Player == null)
                 return;
 
-            if (_spawnTimerEnemy >= GameData.TimeBetweenEnemySpawn)
+            SpawnWaveData wave = GetCurrentWave();
+            if (wave == null)
+                return;
+
+            if (_currentWave != wave)
             {
-                SpawnEnemy();
-                _spawnTimerEnemy = 0f;
+                _currentWave = wave;
+                _regularSpawnTimer = 0f;
+                _burstSpawnTimer = 0f;
             }
+
+            int currentEnemies = CountActiveEnemies();
+
+            if (HandleEmergencyFill(wave, currentEnemies))
+                return;
+
+            _regularSpawnTimer += deltaTime;
+
+            if (wave.UseBurstSpawn)
+                _burstSpawnTimer += deltaTime;
+
+            if (_regularSpawnTimer >= wave.SpawnInterval)
+            {
+                _regularSpawnTimer = 0f;
+                SpawnBatch(wave, wave.SpawnPerTick);
+            }
+
+            if (wave.UseBurstSpawn && _burstSpawnTimer >= wave.BurstInterval)
+            {
+                _burstSpawnTimer = 0f;
+                SpawnBatch(wave, wave.BurstSpawnCount);
+            }
+        }
+
+        private bool HandleEmergencyFill(SpawnWaveData wave, int currentEnemies)
+        {
+            if (!wave.UseEmergencyFill)
+                return false;
+
+            if (currentEnemies > wave.EmergencyThreshold)
+                return false;
+
+            int missingToMinimum = wave.MinimumAliveEnemies - currentEnemies;
+            if (missingToMinimum <= 0)
+                return false;
+
+            int spawnCount = Mathf.Min(missingToMinimum, wave.EmergencySpawnCount);
+            SpawnBatch(wave, spawnCount);
+
+            return true;
+        }
+
+        private void SpawnBatch(SpawnWaveData wave, int requestedCount)
+        {
+            if (wave == null)
+                return;
+
+            if (wave.Enemies == null || wave.Enemies.Count == 0)
+                return;
+
+            int currentEnemies = CountActiveEnemies();
+            if (currentEnemies >= wave.MaximumAliveEnemies)
+                return;
+
+            int freeSlots = wave.MaximumAliveEnemies - currentEnemies;
+            int finalSpawnCount = Mathf.Min(requestedCount, freeSlots);
+            int maxAttempts = Mathf.Min(finalSpawnCount, GameData.MaxSpawnAttemptsPerTick);
+
+            for (int i = 0; i < maxAttempts; i++)
+            {
+                CharacterType enemyType = GetWeightedRandomEnemyType(wave);
+                SpawnEnemy(enemyType);
+            }
+        }
+
+        private SpawnWaveData GetCurrentWave()
+        {
+            float gameTime = GameManager.Instance.GameTime;
+            List<SpawnWaveData> waves = GameData.SpawnWaves;
+
+            if (waves == null || waves.Count == 0)
+                return null;
+
+            SpawnWaveData fallbackWave = null;
+
+            for (int i = 0; i < waves.Count; i++)
+            {
+                SpawnWaveData wave = waves[i];
+
+                if (wave == null)
+                    continue;
+
+                if (wave.IsInWave(gameTime))
+                    return wave;
+
+                if (gameTime >= wave.StartTimeSeconds)
+                    fallbackWave = wave;
+            }
+
+            return fallbackWave;
+        }
+
+        private CharacterType GetWeightedRandomEnemyType(SpawnWaveData wave)
+        {
+            if (wave == null || wave.Enemies == null || wave.Enemies.Count == 0)
+                return CharacterType.DefaultEnemy;
+
+            int totalWeight = 0;
+
+            for (int i = 0; i < wave.Enemies.Count; i++)
+            {
+                totalWeight += wave.Enemies[i].Weight;
+            }
+
+            if (totalWeight <= 0)
+                return wave.Enemies[0].CharacterType;
+
+            int randomValue = Random.Range(0, totalWeight);
+            int accumulatedWeight = 0;
+
+            for (int i = 0; i < wave.Enemies.Count; i++)
+            {
+                accumulatedWeight += wave.Enemies[i].Weight;
+
+                if (randomValue < accumulatedWeight)
+                    return wave.Enemies[i].CharacterType;
+            }
+
+            return wave.Enemies[wave.Enemies.Count - 1].CharacterType;
         }
 
         private int CountActiveEnemies()
         {
             int count = 0;
-            var activeCharacters = CharacterFactory.ActiveCharacters;
+            List<Character> activeCharacters = CharacterFactory.ActiveCharacters;
 
             for (int i = 0; i < activeCharacters.Count; i++)
             {
-                if (activeCharacters[i].CharacterType != CharacterType.DefaultPlayer &&
-                    activeCharacters[i].LiveComponent != null &&
-                    activeCharacters[i].LiveComponent.IsAlive)
-                {
-                    count++;
-                }
+                Character character = activeCharacters[i];
+
+                if (character == null)
+                    continue;
+
+                if (character.CharacterType == CharacterType.DefaultPlayer)
+                    continue;
+
+                if (character.LiveComponent == null)
+                    continue;
+
+                if (!character.LiveComponent.IsAlive)
+                    continue;
+
+                count++;
             }
 
             return count;
         }
 
-        private void SpawnEnemy()
+        private void SpawnEnemy(CharacterType enemyType)
         {
             if (CharacterFactory.Player == null)
                 return;
 
-            CharacterType enemyType = GetEnemyTypeForSpawn();
             Character enemy = CharacterFactory.CreateCharacter(enemyType);
-
             Vector3 spawnPoint = GetSpawnPointOutsideCamera();
 
             CharacterController controller = enemy.CharacterData.CharacterController;
@@ -109,23 +222,6 @@ namespace OmniumLessons
             enemy.gameObject.SetActive(true);
         }
 
-        private CharacterType GetEnemyTypeForSpawn()
-        {
-            float gameTime = GameManager.Instance.GameTime;
-            List<CharacterType> availableEnemies = new List<CharacterType>();
-
-            for (int i = 0; i < _enemySpawnSettings.Count; i++)
-            {
-                if (gameTime >= _enemySpawnSettings[i].SpawnStartTime)
-                {
-                    availableEnemies.Add(_enemySpawnSettings[i].CharacterType);
-                }
-            }
-
-            int randomIndex = Random.Range(0, availableEnemies.Count);
-            return availableEnemies[randomIndex];
-        }
-
         private Vector3 GetSpawnPointOutsideCamera()
         {
             Camera camera = Camera.main;
@@ -142,30 +238,29 @@ namespace OmniumLessons
             float offsetMax = GameData.MaxEnemySpawnOffset;
 
             float spawnY = CharacterFactory.Player.transform.position.y;
-
             int side = Random.Range(0, 4);
 
             switch (side)
             {
-                case 0: // left
+                case 0:
                     return new Vector3(
                         minX - Random.Range(offsetMin, offsetMax),
                         spawnY,
                         Random.Range(minZ, maxZ));
 
-                case 1: // right
+                case 1:
                     return new Vector3(
                         maxX + Random.Range(offsetMin, offsetMax),
                         spawnY,
                         Random.Range(minZ, maxZ));
 
-                case 2: // bottom
+                case 2:
                     return new Vector3(
                         Random.Range(minX, maxX),
                         spawnY,
                         minZ - Random.Range(offsetMin, offsetMax));
 
-                default: // top
+                default:
                     return new Vector3(
                         Random.Range(minX, maxX),
                         spawnY,

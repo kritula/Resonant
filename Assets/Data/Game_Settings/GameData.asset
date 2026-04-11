@@ -15,6 +15,12 @@ MonoBehaviour:
   gameTimeMinutesMax: 15
   baseExperience: 20
   grownRate: 10
-  timeBetweenEnemySpawn: 2
-  minEnemySpawnOffset: 2
-  maxEnemySpawnOffset: 5
+  minEnemySpawnOffset: 6
+  maxEnemySpawnOffset: 12
+  maxSpawnAttemptsPerTick: 50
+  _spawnWaves:
+  - {fileID: 11400000, guid: 297264bd66f06c245816f3333f10f135, type: 2}
+  - {fileID: 11400000, guid: fad098313d6d23d44b4f5d2f971a923a, type: 2}
+  - {fileID: 11400000, guid: 489a30f31581fde4e8712629e61d69dc, type: 2}
+  - {fileID: 11400000, guid: ba30398144e69624399f7b22e06d150d, type: 2}
+  - {fileID: 11400000, guid: a3730c77f27243542b2559165e4dfe8b, type: 2}

@@ -178,7 +178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b8f6c14a74a29c4c89373b08cd4a6b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultSpeed: 5
+  _defaultSpeed: 7
   _characterController: {fileID: 8112031080680725225}
   _characterTransform: {fileID: 5955612968490025706}
   _weaponData: {fileID: 11400000, guid: bb808bae2c43348439d1d814d4a32432, type: 2}
