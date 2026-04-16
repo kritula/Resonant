@@ -6,5 +6,6 @@ namespace OmniumLessons
 
         void Initialize(Character owner);
         void OnUpdate();
+        void ForceFinish();
     }
 }

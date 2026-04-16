@@ -44,7 +44,7 @@ namespace OmniumLessons
                 OpenEnd();
         }
 
-        public void Hide(bool isImmediately)
+        public virtual void Hide(bool isImmediately)
         {
             CloseStart();
             if (gameObject.activeInHierarchy)

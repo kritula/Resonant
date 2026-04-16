@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86ec85499081a204ea721bfdda57404d, type: 3}
+  m_Name: BossPulseAbilityData
+  m_EditorClassIdentifier: 
+  _ringPrefab: {fileID: 7381174649703246934, guid: 1b4b7aa84239d6b45a785e87cdfc7c7a, type: 3}
+  _cooldown: 15
+  _expandDuration: 1.75
+  _contractDuration: 1.75
+  _minRadius: 1.25
+  _maxRadius: 8
+  _ringThickness: 1.1
+  _gapAngle: 45
+  _visualHeightOffset: 0.15
+  _damage: 10
+  _damageOnExpand: 1
+  _damageOnContract: 1
+  _segments: 100
+  _lineMaterial: {fileID: 0}
+  _pulseColor: {r: 0.5, g: 0.9, b: 1, a: 1}

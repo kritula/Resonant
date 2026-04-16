@@ -11,7 +11,6 @@ namespace OmniumLessons
         private LineRenderer _lineRenderer;
         private Vector3 _startPoint;
         private Vector3 _endPoint;
-        private bool _initialized;
 
         public void Initialize(Vector3 startPoint, Vector3 endPoint)
         {
@@ -32,7 +31,6 @@ namespace OmniumLessons
                 _lineRenderer.SetPosition(2, _endPoint);
             }
 
-            _initialized = true;
             Destroy(gameObject, _lifeTime);
         }
     }

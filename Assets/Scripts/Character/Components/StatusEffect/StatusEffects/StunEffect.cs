@@ -26,5 +26,10 @@ namespace OmniumLessons
                 _timer -= Time.deltaTime;
             }
         }
+
+        public void ForceFinish()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

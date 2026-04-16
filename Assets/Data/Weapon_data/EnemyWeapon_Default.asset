@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponName: EnemyWeapon_Default
   _damage: 5
-  _attackDistance: 1.5
+  _attackDistance: 2
   _attackCooldown: 1

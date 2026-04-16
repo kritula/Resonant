@@ -9,12 +9,16 @@ namespace OmniumLessons
         [SerializeField][TextArea(2, 4)] private string _description;
         [SerializeField] private Sprite _icon;
 
+        [Header("Rarity")]
+        [SerializeField] private UpgradeRarity _rarity = UpgradeRarity.Common;
+
         [Header("Per Level Descriptions")]
         [SerializeField][TextArea(2, 4)] private List<string> _levelDescriptions = new List<string>();
 
         public string UpgradeName => _upgradeName;
         public string Description => _description;
         public Sprite Icon => _icon;
+        public UpgradeRarity Rarity => _rarity;
         public List<string> LevelDescriptions => _levelDescriptions;
 
         public abstract UpgradeType UpgradeType { get; }

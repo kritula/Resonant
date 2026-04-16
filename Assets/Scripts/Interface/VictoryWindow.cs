@@ -8,29 +8,44 @@ namespace OmniumLessons
     {
         [Space]
         [SerializeField] private Button continueButton;
-        [SerializeField] private TMP_Text recordText;
-        [SerializeField] private TMP_Text newRecordText;
+        [SerializeField] private TMP_Text currentResonance;
 
         public override void Initialize()
         {
+            continueButton.onClick.RemoveAllListeners();
             continueButton.onClick.AddListener(ContinueButtonClickHandler);
         }
 
         private void ContinueButtonClickHandler()
         {
+            if (GameManager.Instance == null)
+                return;
+
+            GameManager.Instance.ClearSession();
+
             Hide(true);
-            GameManager.Instance.WindowsService.ShowWindow<MainMenuWindow>(false);
+
+            if (GameManager.Instance.WindowsService != null)
+            {
+                GameManager.Instance.WindowsService.HideWindow<GameplayWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<VictoryWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<DefeatWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<PauseMenuWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<SkillsWindow>(true);
+
+                GameManager.Instance.WindowsService.ShowWindow<MainMenuWindow>(true);
+            }
         }
 
         protected override void OpenStart()
         {
             base.OpenStart();
 
-            int resonance = GameManager.Instance.ResonanceManager.CurrentResonance;
-            recordText.text = resonance.ToString();
+            if (GameManager.Instance == null || GameManager.Instance.ResonanceManager == null)
+                return;
 
-            // пока убираем "новый рекорд", так как его ещё нет в системе
-            newRecordText.gameObject.SetActive(false);
+            int resonance = GameManager.Instance.ResonanceManager.CurrentResonance;
+            currentResonance.text = resonance.ToString();
         }
     }
 }

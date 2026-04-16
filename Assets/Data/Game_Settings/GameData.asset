@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 722e01cb0b7c1994b96aa316d0f235de, type: 3}
   m_Name: GameData
   m_EditorClassIdentifier: 
-  gameTimeMinutesMax: 15
+  gameTimeMinutesMax: 0.2
   baseExperience: 20
   grownRate: 10
   minEnemySpawnOffset: 6

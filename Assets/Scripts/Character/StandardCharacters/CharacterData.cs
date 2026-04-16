@@ -27,5 +27,19 @@ namespace OmniumLessons
         {
             _character = GetComponent<Character>();
         }
+        public void SetDefaultSpeed(float value)
+        {
+            _defaultSpeed = value;
+        }
+
+        public void SetMaxHealth(float value)
+        {
+            _maxHealth = value;
+        }
+
+        public void SetExperienceReward(int value)
+        {
+            _experienceReward = value;
+        }
     }
 }

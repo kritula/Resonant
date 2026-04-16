@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace OmniumLessons
 {
@@ -74,6 +74,8 @@ namespace OmniumLessons
         {
             if (!LiveComponent.IsAlive)
                 return;
+
+            StatusEffectController?.OnUpdate(); // 🔴 ВАЖНО
 
             float moveHorizontal = Input.GetAxis("Horizontal");
             float moveVertical = Input.GetAxis("Vertical");

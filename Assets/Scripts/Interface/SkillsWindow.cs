@@ -10,14 +10,22 @@ namespace OmniumLessons
 
         private readonly List<UpgradeButton> _buttons = new List<UpgradeButton>();
 
-        public void ShowUpgrades(List<UpgradeData> upgrades)
+        public void ShowUpgrades(List<UpgradeOfferData> upgradeOffers)
         {
             ClearButtons();
 
-            foreach (var upgrade in upgrades)
+            if (upgradeOffers == null || upgradeOffers.Count == 0)
+                return;
+
+            for (int i = 0; i < upgradeOffers.Count; i++)
             {
+                UpgradeOfferData offer = upgradeOffers[i];
+
+                if (offer == null || offer.UpgradeData == null)
+                    continue;
+
                 UpgradeButton button = Instantiate(buttonPrefab, container);
-                button.Setup(upgrade);
+                button.Setup(offer);
                 _buttons.Add(button);
             }
         }
@@ -33,6 +41,12 @@ namespace OmniumLessons
             }
 
             _buttons.Clear();
+        }
+
+        public override void Hide(bool isImmediately = false)
+        {
+            base.Hide(isImmediately);
+            ClearButtons();
         }
     }
 }

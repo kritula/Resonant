@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace OmniumLessons
 {
-    [CreateAssetMenu(menuName = "Upgrades/Upgrade Database")]
+    [CreateAssetMenu(fileName = "UpgradeDatabase", menuName = "ZombieIO/Upgrade Database")]
     public class UpgradeDatabase : ScriptableObject
     {
-        [SerializeField] private List<UpgradeData> _upgrades;
+        [SerializeField] private List<UpgradeData> _upgrades = new List<UpgradeData>();
 
         public List<UpgradeData> Upgrades => _upgrades;
     }

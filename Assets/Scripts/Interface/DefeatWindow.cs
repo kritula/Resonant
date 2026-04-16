@@ -8,28 +8,55 @@ namespace OmniumLessons
         [SerializeField] private Button restartButton;
         [SerializeField] private Button returnToMainMenuButton;
 
-
         public override void Initialize()
         {
+            restartButton.onClick.RemoveAllListeners();
             restartButton.onClick.AddListener(OnRestartButtonClicked);
+
+            returnToMainMenuButton.onClick.RemoveAllListeners();
             returnToMainMenuButton.onClick.AddListener(OnReturnToMainMenuButtonClicked);
         }
 
         private void OnReturnToMainMenuButtonClicked()
         {
+            if (GameManager.Instance == null)
+                return;
+
+            GameManager.Instance.ClearSession();
+
             Hide(true);
 
-            GameManager.Instance.WindowsService.HideWindow<GameplayWindow>(true);
-            GameManager.Instance.WindowsService.ShowWindow<MainMenuWindow>(false);
+            if (GameManager.Instance.WindowsService != null)
+            {
+                GameManager.Instance.WindowsService.HideWindow<GameplayWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<DefeatWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<VictoryWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<PauseMenuWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<SkillsWindow>(true);
+
+                GameManager.Instance.WindowsService.ShowWindow<MainMenuWindow>(true);
+            }
         }
 
         private void OnRestartButtonClicked()
         {
+            if (GameManager.Instance == null)
+                return;
+
+            if (GameManager.Instance.WindowsService != null)
+            {
+                GameManager.Instance.WindowsService.HideWindow<DefeatWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<VictoryWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<PauseMenuWindow>(true);
+                GameManager.Instance.WindowsService.HideWindow<SkillsWindow>(true);
+            }
+
             GameManager.Instance.StartNewSession();
 
-            // UI-логика здесь:
-            Hide(true); 
-            GameManager.Instance.WindowsService.ShowWindow<GameplayWindow>(true);
+            if (GameManager.Instance.WindowsService != null)
+            {
+                GameManager.Instance.WindowsService.ShowWindow<GameplayWindow>(true);
+            }
         }
     }
 }

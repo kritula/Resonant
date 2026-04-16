@@ -10,7 +10,13 @@ namespace OmniumLessons
         [SerializeField] private WindowsService _windowsService;
         [SerializeField] private UpgradeDatabase _abilityDatabase;
 
+        [Header("Boss")]
+        [SerializeField] private CharacterType _bossCharacterType = CharacterType.Boss_Null_Core;
+        [SerializeField] private float _bossSpawnDistanceFromPlayer = 10f;
+        [SerializeField] private bool _stopRegularSpawnOnBossAppear = true;
+
         private bool _isGameActive = false;
+        private bool _bossSpawned = false;
         private float _gameTimeSec = 0f;
 
         private CharacterSpawnController _spawnController;
@@ -46,9 +52,12 @@ namespace OmniumLessons
         {
             ResonanceManager = new ResonanceManager();
             ExperienceManager = new ExperienceManager();
-            _upgradeSelectionService = new UpgradeSelectionService(_abilityDatabase);
+            _upgradeSelectionService = new UpgradeSelectionService();
+
+            ResonanceManager.ResetSession();
 
             _windowsService.Initialize();
+
             ExperienceManager.OnLevelChanged += OnLevelUp;
         }
 
@@ -60,7 +69,7 @@ namespace OmniumLessons
                 return;
             }
 
-            ResonanceManager.ResetProgress();
+            ResonanceManager.ResetSession();
             ExperienceManager.StartGame();
 
             Character player = CharacterFactory.CreateCharacter(CharacterType.DefaultPlayer);
@@ -75,6 +84,7 @@ namespace OmniumLessons
             }
 
             _gameTimeSec = 0f;
+            _bossSpawned = false;
 
             _spawnController = new CharacterSpawnController();
             _spawnController.StartSpawn();
@@ -91,15 +101,80 @@ namespace OmniumLessons
 
             _gameTimeSec += Time.deltaTime;
 
-            if (_spawnController != null)
+            ResonanceManager?.OnUpdate(Time.deltaTime);
+
+            if (!_bossSpawned && _spawnController != null)
             {
                 _spawnController.OnUpdate(Time.deltaTime);
             }
 
-            if (_gameTimeSec >= _gameData.GameTimeSecondsMax)
+            if (!_bossSpawned && _gameTimeSec >= _gameData.GameTimeSecondsMax)
             {
-                GameVictory();
+                SpawnBossPhase();
             }
+        }
+
+        private void SpawnBossPhase()
+        {
+            _bossSpawned = true;
+
+            if (_stopRegularSpawnOnBossAppear && _spawnController != null)
+            {
+                _spawnController.StopSpawn();
+            }
+
+            SpawnBoss();
+        }
+
+        private void SpawnBoss()
+        {
+            Character player = CharacterFactory.Player;
+
+            if (player == null)
+            {
+                Debug.LogWarning("GameManager: Player not found. Boss spawn cancelled.");
+                return;
+            }
+
+            Character boss = CharacterFactory.CreateCharacter(_bossCharacterType);
+
+            if (boss == null)
+            {
+                Debug.LogWarning("GameManager: Boss was not created. Check CharacterFactory boss prefab.");
+                return;
+            }
+
+            Vector3 spawnDirection = Random.insideUnitSphere;
+            spawnDirection.y = 0f;
+
+            if (spawnDirection.sqrMagnitude < 0.01f)
+                spawnDirection = Vector3.forward;
+
+            spawnDirection.Normalize();
+
+            Vector3 spawnPosition = player.transform.position + spawnDirection * _bossSpawnDistanceFromPlayer;
+
+            CharacterController bossController = boss.CharacterData != null
+                ? boss.CharacterData.CharacterController
+                : null;
+
+            if (bossController != null)
+                bossController.enabled = false;
+
+            boss.transform.position = spawnPosition;
+
+            if (boss.CharacterData != null && boss.CharacterData.CharacterTransform != null)
+            {
+                boss.CharacterData.CharacterTransform.position = spawnPosition;
+            }
+
+            if (bossController != null)
+                bossController.enabled = true;
+
+            boss.gameObject.SetActive(true);
+            RegisterCharacter(boss);
+
+            Debug.Log("Boss spawned: Null Core");
         }
 
         public void RegisterCharacter(Character character)
@@ -127,6 +202,10 @@ namespace OmniumLessons
                     ExperienceManager.AddExperience(deathCharacter.CharacterData.ExperienceReward);
                     Debug.Log("Exp = " + ExperienceManager.CurrentExperience);
                     break;
+
+                case CharacterType.Boss_Null_Core:
+                    GameVictory();
+                    break;
             }
 
             if (deathCharacter.LiveComponent != null)
@@ -152,8 +231,9 @@ namespace OmniumLessons
             }
 
             _gameTimeSec = 0f;
+            _bossSpawned = false;
 
-            ResonanceManager.ResetProgress();
+            ResonanceManager.ResetSession();
             ExperienceManager.StartGame();
 
             CharacterFactory.ClearAll();
@@ -167,44 +247,78 @@ namespace OmniumLessons
 
         private void GameOver()
         {
+            if (!_isGameActive)
+                return;
+
+            _isGameActive = false;
+
             Debug.Log("GameOver!");
             Debug.Log("Resonance = " + ResonanceManager.CurrentResonance);
 
-            _isGameActive = false;
             IsGamePaused = true;
+            Time.timeScale = 0f;
 
             if (_spawnController != null)
                 _spawnController.StopSpawn();
 
-            WindowsService.ShowWindow<DefeatWindow>(false);
+            if (WindowsService != null)
+            {
+                WindowsService.HideWindow<SkillsWindow>(true);
+                WindowsService.ShowWindow<DefeatWindow>(false);
+            }
         }
 
         private void GameVictory()
         {
-            Debug.Log("Victory! Time's up!");
-            Debug.Log("Resonance = " + ResonanceManager.CurrentResonance);
+            if (!_isGameActive)
+                return;
 
             _isGameActive = false;
+
+            Debug.Log("Victory! Boss defeated!");
+            Debug.Log("Resonance = " + ResonanceManager.CurrentResonance);
+
             IsGamePaused = true;
+            Time.timeScale = 0f;
 
             if (_spawnController != null)
                 _spawnController.StopSpawn();
 
-            WindowsService.ShowWindow<VictoryWindow>(false);
+            if (WindowsService != null)
+            {
+                WindowsService.HideWindow<SkillsWindow>(true);
+                WindowsService.ShowWindow<VictoryWindow>(false);
+            }
         }
 
         private void OnLevelUp(int level)
         {
+            if (!_isGameActive)
+                return;
+
+            if (IsGamePaused)
+                return;
+
+            if (_upgradeSelectionService == null)
+                return;
+
+            if (_abilityDatabase == null)
+                return;
+
+            List<UpgradeOfferData> upgradeOffers = _upgradeSelectionService.GetUpgradeOffers(_abilityDatabase.Upgrades);
+
+            if (upgradeOffers == null || upgradeOffers.Count == 0)
+                return;
+
+            SkillsWindow skillsWindow = WindowsService.GetWindow<SkillsWindow>();
+            if (skillsWindow == null)
+                return;
+
             IsGamePaused = true;
             Time.timeScale = 0f;
 
-            PlayerCharacter player = CharacterFactory.Player as PlayerCharacter;
-            List<UpgradeData> upgrades = _upgradeSelectionService.GetRandomUpgrades(3, player);
-
-            SkillsWindow skillsWindow = WindowsService.GetWindow<SkillsWindow>();
-            skillsWindow.ShowUpgrades(upgrades);
-
             WindowsService.ShowWindow<SkillsWindow>(true);
+            skillsWindow.ShowUpgrades(upgradeOffers);
         }
     }
 }
