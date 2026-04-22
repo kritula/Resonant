@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace OmniumLessons
@@ -26,6 +26,7 @@ namespace OmniumLessons
 
         public ResonanceManager ResonanceManager { get; private set; }
         public ExperienceManager ExperienceManager { get; private set; }
+        public HexGridManager HexGridManager { get; private set; }
 
         public WindowsService WindowsService => _windowsService;
         public CharacterFactory CharacterFactory => _characterFactory;
@@ -59,6 +60,8 @@ namespace OmniumLessons
             _windowsService.Initialize();
 
             ExperienceManager.OnLevelChanged += OnLevelUp;
+
+            HexGridManager = FindFirstObjectByType<HexGridManager>();
         }
 
         public void StartGame()
@@ -81,6 +84,16 @@ namespace OmniumLessons
             if (cameraFollow != null)
             {
                 cameraFollow.SetTarget(player.transform);
+            }
+
+            if (HexGridManager == null)
+            {
+                HexGridManager = FindFirstObjectByType<HexGridManager>();
+            }
+
+            if (HexGridManager != null)
+            {
+                HexGridManager.Initialize(player.transform);
             }
 
             _gameTimeSec = 0f;
@@ -235,6 +248,16 @@ namespace OmniumLessons
 
             ResonanceManager.ResetSession();
             ExperienceManager.StartGame();
+
+            if (HexGridManager == null)
+            {
+                HexGridManager = FindFirstObjectByType<HexGridManager>();
+            }
+
+            if (HexGridManager != null)
+            {
+                HexGridManager.ResetGrid();
+            }
 
             CharacterFactory.ClearAll();
         }

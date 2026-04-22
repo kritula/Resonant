@@ -232,12 +232,16 @@ namespace OmniumLessons
                 return Vector3.zero;
             }
 
-            GetCameraBounds(camera, out float minX, out float maxX, out float minZ, out float maxZ);
+            if (!TryGetCameraGroundBounds(camera, out float minX, out float maxX, out float minZ, out float maxZ))
+            {
+                Debug.LogWarning("CharacterSpawnController: Failed to calculate camera ground bounds.");
+                return CharacterFactory.Player.transform.position;
+            }
 
             float offsetMin = GameData.MinEnemySpawnOffset;
             float offsetMax = GameData.MaxEnemySpawnOffset;
 
-            float spawnY = CharacterFactory.Player.transform.position.y;
+            float spawnY = 1f;
             int side = Random.Range(0, 4);
 
             switch (side)
@@ -268,18 +272,48 @@ namespace OmniumLessons
             }
         }
 
-        private void GetCameraBounds(Camera camera, out float minX, out float maxX, out float minZ, out float maxZ)
+        private bool TryGetCameraGroundBounds(Camera camera, out float minX, out float maxX, out float minZ, out float maxZ)
         {
-            float height = camera.orthographicSize * 2f;
-            float width = height * camera.aspect;
+            minX = maxX = minZ = maxZ = 0f;
 
-            Vector3 cameraPosition = camera.transform.position;
+            float groundY = CharacterFactory.Player != null
+                ? CharacterFactory.Player.transform.position.y
+                : 0f;
 
-            minX = cameraPosition.x - width / 2f;
-            maxX = cameraPosition.x + width / 2f;
+            if (!TryGetGroundPointFromViewport(camera, new Vector3(0f, 0f, 0f), groundY, out Vector3 leftBottom))
+                return false;
 
-            minZ = cameraPosition.z - height / 2f;
-            maxZ = cameraPosition.z + height / 2f;
+            if (!TryGetGroundPointFromViewport(camera, new Vector3(0f, 1f, 0f), groundY, out Vector3 leftTop))
+                return false;
+
+            if (!TryGetGroundPointFromViewport(camera, new Vector3(1f, 0f, 0f), groundY, out Vector3 rightBottom))
+                return false;
+
+            if (!TryGetGroundPointFromViewport(camera, new Vector3(1f, 1f, 0f), groundY, out Vector3 rightTop))
+                return false;
+
+            minX = Mathf.Min(leftBottom.x, leftTop.x, rightBottom.x, rightTop.x);
+            maxX = Mathf.Max(leftBottom.x, leftTop.x, rightBottom.x, rightTop.x);
+
+            minZ = Mathf.Min(leftBottom.z, leftTop.z, rightBottom.z, rightTop.z);
+            maxZ = Mathf.Max(leftBottom.z, leftTop.z, rightBottom.z, rightTop.z);
+
+            return true;
+        }
+
+        private bool TryGetGroundPointFromViewport(Camera camera, Vector3 viewportPoint, float groundY, out Vector3 groundPoint)
+        {
+            Plane groundPlane = new Plane(Vector3.up, new Vector3(0f, groundY, 0f));
+            Ray ray = camera.ViewportPointToRay(viewportPoint);
+
+            if (groundPlane.Raycast(ray, out float enter))
+            {
+                groundPoint = ray.GetPoint(enter);
+                return true;
+            }
+
+            groundPoint = Vector3.zero;
+            return false;
         }
     }
 }

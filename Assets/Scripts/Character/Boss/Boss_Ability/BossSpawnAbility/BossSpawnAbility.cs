@@ -128,7 +128,10 @@ namespace OmniumLessons
 
             Vector3 offset = new Vector3(randomCircle.x, 0f, randomCircle.y) * distance;
 
-            return bossPosition + offset;
+            Vector3 spawnPosition = bossPosition + offset;
+            spawnPosition.y = _data.SpawnY;
+
+            return spawnPosition;
         }
 
         private void PlaceCharacter(Character character, Vector3 position)

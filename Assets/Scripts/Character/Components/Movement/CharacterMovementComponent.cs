@@ -1,4 +1,3 @@
-using System.Xml;
 using UnityEngine;
 
 namespace OmniumLessons
@@ -7,6 +6,7 @@ namespace OmniumLessons
     {
         private CharacterData characterData;
         private float _speed;
+        private float _rotationVelocity;
 
         public float Speed
         {
@@ -15,6 +15,7 @@ namespace OmniumLessons
             {
                 if (value < 0)
                     value = 0;
+
                 _speed = value;
             }
         }
@@ -31,11 +32,9 @@ namespace OmniumLessons
                 return;
 
             direction.y = 0f;
-            direction = direction.normalized;
+            direction.Normalize();
 
-            Vector3 move = direction;
-
-            characterData.CharacterController.Move(move * Speed * Time.deltaTime);
+            characterData.CharacterController.Move(direction * Speed * Time.deltaTime);
         }
 
         public void Rotation(Vector3 direction)
@@ -43,15 +42,23 @@ namespace OmniumLessons
             if (direction == Vector3.zero)
                 return;
 
-            float smooth = 0.1f;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude <= 0.0001f)
+                return;
+
+            direction.Normalize();
+
+            float rotationSmoothTime = 0.1f;
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+
             float angle = Mathf.SmoothDampAngle(
                 characterData.CharacterTransform.eulerAngles.y,
                 targetAngle,
-                ref smooth,
-                smooth);
+                ref _rotationVelocity,
+                rotationSmoothTime);
 
-            characterData.CharacterTransform.rotation = Quaternion.Euler(0, angle, 0);
+            characterData.CharacterTransform.rotation = Quaternion.Euler(0f, angle, 0f);
         }
     }
 }

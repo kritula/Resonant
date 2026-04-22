@@ -75,12 +75,16 @@ namespace OmniumLessons
             if (!LiveComponent.IsAlive)
                 return;
 
-            StatusEffectController?.OnUpdate(); // 🔴 ВАЖНО
+            StatusEffectController?.OnUpdate();
 
             float moveHorizontal = Input.GetAxis("Horizontal");
             float moveVertical = Input.GetAxis("Vertical");
 
-            Vector3 movementVector = new Vector3(moveHorizontal, 0.0f, moveVertical).normalized;
+            Vector3 movementVector = new Vector3(moveHorizontal, 0f, moveVertical);
+
+            if (movementVector.sqrMagnitude > 1f)
+                movementVector.Normalize();
+
             MovableComponent.Move(movementVector);
 
             if (CharacterTarget != null)

@@ -21,12 +21,14 @@ namespace OmniumLessons
         [SerializeField] private int _spawnCount = 3;
         [SerializeField] private float _minSpawnDistance = 2f;
         [SerializeField] private float _maxSpawnDistance = 5f;
+        [SerializeField] private float _spawnY = 1f;
         [SerializeField] private List<BossSpawnEntry> _enemies = new List<BossSpawnEntry>();
 
         public float Cooldown => Mathf.Max(0.1f, _cooldown);
         public int SpawnCount => Mathf.Max(1, _spawnCount);
         public float MinSpawnDistance => Mathf.Max(0.1f, _minSpawnDistance);
         public float MaxSpawnDistance => Mathf.Max(MinSpawnDistance, _maxSpawnDistance);
+        public float SpawnY => _spawnY;
         public List<BossSpawnEntry> Enemies => _enemies;
     }
 }

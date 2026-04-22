@@ -70,14 +70,14 @@ namespace OmniumLessons
         {
             Vector3 direction = CharacterTarget.transform.position - transform.position;
             direction.y = 0f;
+
+            if (direction.sqrMagnitude <= 0.0001f)
+                return;
+
             direction.Normalize();
 
             MovableComponent.Move(direction);
-
-            if (direction != Vector3.zero)
-            {
-                MovableComponent.Rotation(direction);
-            }
+            MovableComponent.Rotation(direction);
         }
 
         private void AttackTarget()
