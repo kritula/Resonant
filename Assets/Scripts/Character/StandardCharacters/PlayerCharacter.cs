@@ -51,24 +51,10 @@ namespace OmniumLessons
 
             AbilityManager = new AbilityManager(this);
             AttackModifierController = new AttackModifierController();
+
+            LiveComponent.OnCharacterDeath += OnDeath;
         }
 
-        public void AddAttackModifier(AttackModifierUpgradeData upgradeData)
-        {
-            if (upgradeData == null)
-                return;
-
-            if (AttackModifierController == null)
-                return;
-
-            AttackModifierController.AddModifier(upgradeData);
-        }
-
-        public void ClearAbilities()
-        {
-            AbilityManager?.ClearAbilities();
-            AttackModifierController?.Clear();
-        }
 
         public override void Update()
         {
@@ -85,20 +71,57 @@ namespace OmniumLessons
             if (movementVector.sqrMagnitude > 1f)
                 movementVector.Normalize();
 
+            UpdateSpriteDirection(movementVector);
             MovableComponent.Move(movementVector);
+
+            float speed = movementVector.magnitude;
+
+            Animator.SetFloat(AnimatorHashes.Speed, speed);
 
             if (CharacterTarget != null)
             {
-                float distance = Vector3.Distance(transform.position, CharacterTarget.transform.position);
+                Vector3 attackDirection = CharacterTarget.transform.position - transform.position;
+                attackDirection.y = 0f;
+
+                float distance = attackDirection.magnitude;
 
                 if (distance <= _characterData.WeaponData.AttackDistance)
                 {
-                    AttackComponent.MakeDamage(CharacterTarget);
+                    UpdateSpriteDirection(attackDirection); // 👈 ВСТАВЛЯЕМ СЮДА
+
+                    if (AttackComponent.MakeDamage(CharacterTarget))
+                    {
+                        PlayAttackAnimation();
+                    }
                 }
             }
 
             AttackComponent.OnUpdate();
             AbilityManager?.OnUpdate();
+        }
+
+        private void PlayAttackAnimation()
+        {
+            if (Animator != null)
+            {
+                Animator.SetTrigger(AnimatorHashes.Attack);
+            }
+        }
+        public void AddAttackModifier(AttackModifierUpgradeData upgradeData)
+        {
+            if (upgradeData == null)
+                return;
+
+            if (AttackModifierController == null)
+                return;
+
+            AttackModifierController.AddModifier(upgradeData);
+        }
+
+        public void ClearAbilities()
+        {
+            AbilityManager?.ClearAbilities();
+            AttackModifierController?.Clear();
         }
     }
 }

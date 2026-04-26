@@ -4,7 +4,7 @@ namespace OmniumLessons {
 
         public void Initialize(CharacterData characterData);
 
-        public void MakeDamage(Character damageTarget);
+        public bool MakeDamage(Character damageTarget);
 
         public void OnUpdate();
     }

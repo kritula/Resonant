@@ -21,6 +21,7 @@ namespace OmniumLessons
 
         private CharacterSpawnController _spawnController;
         private UpgradeSelectionService _upgradeSelectionService;
+        private CharacterDeathService _characterDeathService;
 
         public static GameManager Instance { get; private set; }
 
@@ -62,6 +63,13 @@ namespace OmniumLessons
             ExperienceManager.OnLevelChanged += OnLevelUp;
 
             HexGridManager = FindFirstObjectByType<HexGridManager>();
+
+            _characterDeathService = new CharacterDeathService(
+                _characterFactory,
+                ExperienceManager,
+                _windowsService,
+                GameOver,
+                GameVictory);
         }
 
         public void StartGame()
@@ -77,6 +85,14 @@ namespace OmniumLessons
 
             Character player = CharacterFactory.CreateCharacter(CharacterType.DefaultPlayer);
             player.transform.position = Vector3.zero;
+
+            CharacterController controller = player.CharacterData != null
+                ? player.CharacterData.CharacterController
+                : null;
+
+            if (controller != null)
+                controller.enabled = true;
+
             player.gameObject.SetActive(true);
             RegisterCharacter(player);
 
@@ -185,50 +201,12 @@ namespace OmniumLessons
                 bossController.enabled = true;
 
             boss.gameObject.SetActive(true);
-            RegisterCharacter(boss);
+            _characterDeathService.RegisterCharacter(boss); ;
 
             Debug.Log("Boss spawned: Null Core");
         }
 
-        public void RegisterCharacter(Character character)
-        {
-            if (character == null || character.LiveComponent == null)
-                return;
-
-            character.LiveComponent.OnCharacterDeath -= OnCharacterDeathHandler;
-            character.LiveComponent.OnCharacterDeath += OnCharacterDeathHandler;
-        }
-
-        private void OnCharacterDeathHandler(Character deathCharacter)
-        {
-            Debug.Log("character " + deathCharacter.gameObject.name + " is dead");
-
-            switch (deathCharacter.CharacterType)
-            {
-                case CharacterType.DefaultPlayer:
-                    GameOver();
-                    break;
-
-                case CharacterType.DefaultEnemy:
-                case CharacterType.FastEnemy:
-                case CharacterType.TankEnemy:
-                    ExperienceManager.AddExperience(deathCharacter.CharacterData.ExperienceReward);
-                    Debug.Log("Exp = " + ExperienceManager.CurrentExperience);
-                    break;
-
-                case CharacterType.Boss_Null_Core:
-                    GameVictory();
-                    break;
-            }
-
-            if (deathCharacter.LiveComponent != null)
-            {
-                deathCharacter.LiveComponent.OnCharacterDeath -= OnCharacterDeathHandler;
-            }
-
-            CharacterFactory.ReturnCharacterToPool(deathCharacter);
-            deathCharacter.gameObject.SetActive(false);
-        }
+        
 
         public void ClearSession()
         {
@@ -342,6 +320,14 @@ namespace OmniumLessons
 
             WindowsService.ShowWindow<SkillsWindow>(true);
             skillsWindow.ShowUpgrades(upgradeOffers);
+        }
+        public void FinishCharacterDeath(Character deathCharacter)
+        {
+            _characterDeathService?.FinishCharacterDeath(deathCharacter);
+        }
+        public void RegisterCharacter(Character character)
+        {
+            _characterDeathService?.RegisterCharacter(character);
         }
     }
 }

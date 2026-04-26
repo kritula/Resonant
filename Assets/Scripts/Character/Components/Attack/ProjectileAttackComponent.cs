@@ -12,31 +12,33 @@ namespace OmniumLessons
             _characterData = characterData;
         }
 
-        public void MakeDamage(Character target)
+        public bool MakeDamage(Character target)
         {
             if (_characterData == null)
-                return;
+                return false;
 
             if (_characterData.WeaponData == null)
-                return;
+                return false;
 
             if (target == null || target.LiveComponent == null || !target.LiveComponent.IsAlive)
-                return;
+                return false;
 
             PlayerCharacter owner = _characterData.GetComponent<PlayerCharacter>();
 
             if (owner == null)
-                return;
+                return false;
 
             AttackShotData shotData = owner.AttackModifierController.BuildShotData();
 
             float finalCooldown = _characterData.WeaponData.AttackCooldown * shotData.AttackCooldownMultiplier;
 
             if (_attackTimer > 0f)
-                return;
+                return false;
 
             SpawnProjectiles(owner, target, shotData);
             _attackTimer = finalCooldown;
+
+            return true;
         }
 
         public void OnUpdate()

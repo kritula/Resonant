@@ -8,7 +8,6 @@ namespace OmniumLessons
         [SerializeField] private Button startGameButton;
         [SerializeField] private Button optionsGameButton;
 
-
         public override void Initialize()
         {
             startGameButton.onClick.AddListener(StartGameHandler);

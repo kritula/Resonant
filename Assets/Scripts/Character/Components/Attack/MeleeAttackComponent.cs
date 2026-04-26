@@ -28,22 +28,24 @@ namespace OmniumLessons
             _lockDamageTime = 0f;
         }
 
-        public void MakeDamage(Character damageTarget)
+        public bool MakeDamage(Character damageTarget)
         {
             if (_characterData == null)
-                return;
+                return false;
 
             if (_lockDamageTime > 0f)
-                return;
+                return false;
 
             if (damageTarget == null)
-                return;
+                return false;
 
             if (!damageTarget.LiveComponent.IsAlive)
-                return;
+                return false;
 
             damageTarget.LiveComponent.GetDamage(Damage);
             _lockDamageTime = _lockDamageTimeMax;
+
+            return true;
         }
 
         public void OnUpdate()

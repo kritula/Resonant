@@ -12,6 +12,7 @@ namespace OmniumLessons
 
         [Space]
         [SerializeField] private Slider experienceSlider;
+        [SerializeField] private Slider _timerSlider;
 
         [Space]
         [SerializeField] private TMP_Text timerText;
@@ -121,6 +122,14 @@ namespace OmniumLessons
 
         private void UpdateTimer()
         {
+            
+            float currentTime = GameManager.Instance.GameTime;
+            float maxTime = GameManager.Instance.GameData.GameTimeMinutesMax * 60f;
+
+            float progress = currentTime / maxTime;
+            progress = Mathf.Clamp01(progress);
+
+            _timerSlider.value = progress;
             int min = (int)(GameManager.Instance.GameTime / 60);
             int sec = (int)(GameManager.Instance.GameTime % 60);
             timerText.text = GetTime(min) + ":" + GetTime(sec);
