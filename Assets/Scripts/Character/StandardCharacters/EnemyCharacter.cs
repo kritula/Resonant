@@ -4,6 +4,7 @@ namespace OmniumLessons
 {
     public class EnemyCharacter : Character
     {
+        [SerializeField] private EnemyHealthBarView _healthBarView;
         public override Character CharacterTarget => GameManager.Instance.CharacterFactory.Player;
 
         public override void Initialize()
@@ -16,6 +17,8 @@ namespace OmniumLessons
             base.Initialize();
 
             LiveComponent = new CharacterLiveComponent(this);
+
+            _healthBarView?.Initialize(this);
 
             _isDead = false;
 

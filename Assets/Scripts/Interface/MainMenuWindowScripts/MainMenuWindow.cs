@@ -34,6 +34,7 @@ namespace OmniumLessons
 
             GameManager.Instance.WindowsService.ShowWindow<GameplayWindow>(false);
             Hide(true);
+            //SceneLoader.LoadScene("GameLevel");
         }
 
         private void OpenOptionsHandler()
