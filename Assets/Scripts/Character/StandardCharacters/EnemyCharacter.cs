@@ -45,7 +45,10 @@ namespace OmniumLessons
             if (CharacterTarget == null)
                 return;
 
-            float distance = Vector3.Distance(transform.position, CharacterTarget.transform.position);
+            Vector3 attackDirection = CharacterTarget.transform.position - transform.position;
+            attackDirection.y = 0f;
+
+            float distance = attackDirection.magnitude;
 
             if (distance <= _characterData.WeaponData.AttackDistance)
             {

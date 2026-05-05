@@ -83,9 +83,12 @@ namespace OmniumLessons
                 Vector3 attackDirection = CharacterTarget.transform.position - transform.position;
                 attackDirection.y = 0f;
 
-                float distance = attackDirection.magnitude;
+                float xDistance = attackDirection.x;
+                float zDistance = attackDirection.z / 1.35f;
 
-                if (distance <= _characterData.WeaponData.AttackDistance)
+                float correctedDistance = Mathf.Sqrt(xDistance * xDistance + zDistance * zDistance);
+
+                if (correctedDistance <= _characterData.WeaponData.AttackDistance)
                 {
                     UpdateSpriteDirection(attackDirection); // 👈 ВСТАВЛЯЕМ СЮДА
 
