@@ -1,31 +1,67 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace OmniumLessons
 {
-    public class UpgradeButton : MonoBehaviour
+    public class UpgradeButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [Header("UI")]
         [SerializeField] private TMP_Text nameText;
         [SerializeField] private TMP_Text descriptionText;
         [SerializeField] private TMP_Text costText;
-        [SerializeField] private Image iconImage;
-        [SerializeField] private Image backgroundImage;
+
+        [SerializeField] private Image _cardImage;
         [SerializeField] private Button selectButton;
 
-        [Header("Colors")]
-        [SerializeField] private Color commonColor = new Color(0.55f, 0.55f, 0.55f);
-        [SerializeField] private Color uncommonColor = new Color(0.35f, 0.75f, 0.35f);
-        [SerializeField] private Color rareColor = new Color(0.35f, 0.75f, 1f);
-        [SerializeField] private Color resonantColor = new Color(1f, 0.82f, 0.2f);
-        [SerializeField] private Color unavailableColor = new Color(0.35f, 0.35f, 0.35f, 1f);
+        [Header("Unavailable Visual")]
+        [SerializeField] private Color unavailableColor = new Color(0.6f, 0.6f, 0.6f, 1f);
         [SerializeField] private bool dimUnavailable = true;
 
-        private UpgradeOfferData _offer;
+        [Header("Hover Visual")]
+        [SerializeField] private Color hoverColor = new Color(1.15f, 1.15f, 1.15f, 1f);
+        [SerializeField] private float hoverScale = 1.05f;
+        [SerializeField] private float hoverAnimationSpeed = 12f;
 
-        private UpgradeVisualService _visualService;
+        private UpgradeOfferData _offer;
         private UpgradeTextBuilder _textBuilder;
+
+        private Vector3 _defaultScale;
+        private Color _defaultCardColor;
+        private Color _targetColor;
+        private Vector3 _targetScale;
+
+        private bool _isHovered;
+
+        private void Awake()
+        {
+            _defaultScale = transform.localScale;
+            _targetScale = _defaultScale;
+
+            if (_cardImage != null)
+                _defaultCardColor = _cardImage.color;
+
+            _targetColor = _defaultCardColor;
+        }
+
+        private void Update()
+        {
+            transform.localScale = Vector3.Lerp(
+                transform.localScale,
+                _targetScale,
+                Time.unscaledDeltaTime * hoverAnimationSpeed
+            );
+
+            if (_cardImage != null)
+            {
+                _cardImage.color = Color.Lerp(
+                    _cardImage.color,
+                    _targetColor,
+                    Time.unscaledDeltaTime * hoverAnimationSpeed
+                );
+            }
+        }
 
         public void Setup(UpgradeOfferData offer)
         {
@@ -35,15 +71,6 @@ namespace OmniumLessons
                 return;
 
             PlayerCharacter player = GameManager.Instance?.CharacterFactory?.Player as PlayerCharacter;
-
-            _visualService = new UpgradeVisualService(
-                commonColor,
-                uncommonColor,
-                rareColor,
-                resonantColor,
-                unavailableColor,
-                dimUnavailable
-            );
 
             _textBuilder = new UpgradeTextBuilder();
 
@@ -62,20 +89,35 @@ namespace OmniumLessons
 
             if (costText != null)
             {
-                if (_offer.ResonanceCost > 0)
-                    costText.text = $"{_offer.ResonanceCost} R";
-                else
-                    costText.text = "FREE";
+                costText.text = _offer.ResonanceCost > 0
+                    ? $"{_offer.ResonanceCost} R"
+                    : "FREE";
             }
         }
 
         private void SetupVisuals()
         {
-            if (backgroundImage != null)
-                backgroundImage.color = _visualService.GetBackgroundColor(_offer);
+            UpgradeData upgradeData = _offer.UpgradeData;
 
-            if (iconImage != null)
-                iconImage.sprite = _offer.UpgradeData.Icon;
+            if (_cardImage != null && upgradeData.CardSprite != null)
+            {
+                _cardImage.sprite = upgradeData.CardSprite;
+
+                _defaultCardColor = GetAvailabilityColor();
+                _targetColor = _defaultCardColor;
+                _cardImage.color = _defaultCardColor;
+            }
+
+            _defaultScale = transform.localScale;
+            _targetScale = _defaultScale;
+        }
+
+        private Color GetAvailabilityColor()
+        {
+            if (_offer.IsAvailable || !dimUnavailable)
+                return Color.white;
+
+            return unavailableColor;
         }
 
         private void SetupButton()
@@ -86,6 +128,23 @@ namespace OmniumLessons
             selectButton.interactable = _offer.IsAvailable;
             selectButton.onClick.RemoveAllListeners();
             selectButton.onClick.AddListener(OnSelect);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (_offer == null || !_offer.IsAvailable)
+                return;
+
+            _isHovered = true;
+            _targetScale = _defaultScale * hoverScale;
+            _targetColor = hoverColor;
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _isHovered = false;
+            _targetScale = _defaultScale;
+            _targetColor = _defaultCardColor;
         }
 
         private void OnSelect()

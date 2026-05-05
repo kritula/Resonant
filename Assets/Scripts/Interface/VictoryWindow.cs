@@ -25,16 +25,8 @@ namespace OmniumLessons
 
             Hide(true);
 
-            if (GameManager.Instance.WindowsService != null)
-            {
-                GameManager.Instance.WindowsService.HideWindow<GameplayWindow>(true);
-                GameManager.Instance.WindowsService.HideWindow<VictoryWindow>(true);
-                GameManager.Instance.WindowsService.HideWindow<DefeatWindow>(true);
-                GameManager.Instance.WindowsService.HideWindow<PauseMenuWindow>(true);
-                GameManager.Instance.WindowsService.HideWindow<SkillsWindow>(true);
-
-                GameManager.Instance.WindowsService.ShowWindow<MainMenuWindow>(true);
-            }
+            Time.timeScale = 1f;
+            SceneLoader.LoadMainMenu();
         }
 
         protected override void OpenStart()

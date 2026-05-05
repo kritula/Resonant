@@ -30,16 +30,12 @@ namespace OmniumLessons
 
         private void StartGameHandler()
         {
-            GameManager.Instance.StartNewSession();
-
-            GameManager.Instance.WindowsService.ShowWindow<GameplayWindow>(false);
-            Hide(true);
-            //SceneLoader.LoadScene("GameLevel");
+            SceneLoader.LoadGameLevel();
         }
 
         private void OpenOptionsHandler()
         {
-            //Hide(false);
+            // TODO
         }
     }
 }

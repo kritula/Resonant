@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _upgradeName: Piercing
   _description: "\u043F\u0440\u043E\u0431\u0438\u0432\u0430\u043D\u0438\u0435"
-  _icon: {fileID: 0}
+  _cardSprite: {fileID: 21300000, guid: b2b60771a56b595458c87448bd698755, type: 3}
   _rarity: 1
   _levelDescriptions:
   - "\u0421\u043D\u0430\u0440\u044F\u0434 \u043F\u0440\u043E\u0445\u043E\u0434\u0438\u0442

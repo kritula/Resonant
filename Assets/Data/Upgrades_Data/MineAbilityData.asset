@@ -15,7 +15,8 @@ MonoBehaviour:
   _upgradeName: "\u041C\u0438\u043D\u044B"
   _description: "\u0421\u043F\u0430\u0432\u043D\u0438\u0442 \u043C\u0438\u043D\u044B
     \u0432\u043E\u043A\u0440\u0443\u0433 \u0438\u0433\u0440\u043E\u043A\u0430"
-  _icon: {fileID: 0}
+  _cardSprite: {fileID: 21300000, guid: cea4352367aa37247b46db6fa322b9cb, type: 3}
+  _rarity: 0
   _levelDescriptions:
   - "\u041C\u0438\u043D\u044B \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438
     \u043F\u043E\u044F\u0432\u043B\u044F\u044E\u0442\u0441\u044F \u0440\u044F\u0434\u043E\u043C

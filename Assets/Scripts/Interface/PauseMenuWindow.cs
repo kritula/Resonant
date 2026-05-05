@@ -33,20 +33,12 @@ namespace OmniumLessons
             GameManager.Instance.WindowsService.ShowWindow<SettingsWindow>(false);
         }
 
-
-        //private void OnSkillsClicked()
-        //{
-        //    Hide(true);
-        //    GameManager.Instance.WindowsService.ShowWindow<SkillsWindow>(false);
-        //}
-
         private void OnExitToMainMenuClicked()
         {
             GameManager.Instance.ClearSession();
 
-            Hide(true);
-            GameManager.Instance.WindowsService.HideWindow<GameplayWindow>(true);
-            GameManager.Instance.WindowsService.ShowWindow<MainMenuWindow>(false);
+            Time.timeScale = 1f;
+            SceneLoader.LoadMainMenu();
         }
     }
 }

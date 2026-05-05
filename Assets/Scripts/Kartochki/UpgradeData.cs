@@ -7,7 +7,9 @@ namespace OmniumLessons
     {
         [SerializeField] private string _upgradeName;
         [SerializeField][TextArea(2, 4)] private string _description;
-        [SerializeField] private Sprite _icon;
+
+        [Header("Visuals")]
+        [SerializeField] private Sprite _cardSprite;
 
         [Header("Rarity")]
         [SerializeField] private UpgradeRarity _rarity = UpgradeRarity.Common;
@@ -17,7 +19,9 @@ namespace OmniumLessons
 
         public string UpgradeName => _upgradeName;
         public string Description => _description;
-        public Sprite Icon => _icon;
+
+        public Sprite CardSprite => _cardSprite;
+
         public UpgradeRarity Rarity => _rarity;
         public List<string> LevelDescriptions => _levelDescriptions;
 
