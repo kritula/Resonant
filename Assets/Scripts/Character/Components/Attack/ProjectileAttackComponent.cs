@@ -30,12 +30,31 @@ namespace OmniumLessons
 
             AttackShotData shotData = owner.AttackModifierController.BuildShotData();
 
-            float finalCooldown = _characterData.WeaponData.AttackCooldown * shotData.AttackCooldownMultiplier;
+            PlayerAttackStatsDecoratorController decoratorController =
+                 owner.GetComponent<PlayerAttackStatsDecoratorController>();
+
+            AttackStats attackStats;
+
+            if (decoratorController != null)
+            {
+                attackStats = decoratorController.BuildStats(_characterData.WeaponData);
+            }
+            else
+            {
+                attackStats = new AttackStats(
+                    _characterData.WeaponData.Damage,
+                    _characterData.WeaponData.AttackCooldown);
+            }
+
+            float finalCooldown =
+                attackStats.AttackCooldown *
+                shotData.AttackCooldownMultiplier;
 
             if (_attackTimer > 0f)
                 return false;
 
-            SpawnProjectiles(owner, target, shotData);
+            SpawnProjectiles(owner, target, shotData, attackStats);
+
             _attackTimer = finalCooldown;
 
             return true;
@@ -49,14 +68,20 @@ namespace OmniumLessons
             }
         }
 
-        private void SpawnProjectiles(PlayerCharacter owner, Character target, AttackShotData shotData)
+        private void SpawnProjectiles(
+            PlayerCharacter owner,
+            Character target,
+            AttackShotData shotData,
+            AttackStats attackStats)
         {
             PlayerWeaponData weaponData = _characterData.WeaponData as PlayerWeaponData;
 
             if (weaponData == null || weaponData.ProjectilePrefab == null)
                 return;
 
-            Vector3 baseDirection = (target.transform.position - owner.transform.position).normalized;
+            Vector3 baseDirection =
+                (target.transform.position - owner.transform.position).normalized;
+
             baseDirection.y = 0f;
 
             if (baseDirection.sqrMagnitude <= 0.001f)
@@ -66,21 +91,36 @@ namespace OmniumLessons
 
             for (int i = 0; i < projectileCount; i++)
             {
-                float angleOffset = CalculateSpreadOffset(i, projectileCount, shotData.SpreadAngle);
-                Vector3 shotDirection = Quaternion.Euler(0f, angleOffset, 0f) * baseDirection;
+                float angleOffset =
+                    CalculateSpreadOffset(
+                        i,
+                        projectileCount,
+                        shotData.SpreadAngle);
 
-                Vector3 spawnPosition = owner.transform.position + Vector3.up * weaponData.ProjectileSpawnHeight;
+                Vector3 shotDirection =
+                    Quaternion.Euler(0f, angleOffset, 0f) * baseDirection;
+
+                Vector3 spawnPosition =
+                    owner.transform.position +
+                    Vector3.up * weaponData.ProjectileSpawnHeight;
 
                 BaseAttackProjectile projectile = Object.Instantiate(
                     weaponData.ProjectilePrefab,
                     spawnPosition,
                     Quaternion.LookRotation(shotDirection, Vector3.up));
 
-                projectile.Initialize(owner, shotDirection, shotData);
+                projectile.Initialize(
+                    owner,
+                    shotDirection,
+                    shotData,
+                    attackStats);
             }
         }
 
-        private float CalculateSpreadOffset(int index, int totalCount, float spreadAngle)
+        private float CalculateSpreadOffset(
+            int index,
+            int totalCount,
+            float spreadAngle)
         {
             if (totalCount <= 1)
                 return 0f;

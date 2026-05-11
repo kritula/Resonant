@@ -20,7 +20,6 @@ namespace OmniumLessons
             _currentExperience = 0;
             _currentLevel = 1;
 
-            //OnLevelChanged?.Invoke(_currentLevel);
             OnExperienceChanged?.Invoke(_currentExperience, ExperienceToNextLevel);
         }
 

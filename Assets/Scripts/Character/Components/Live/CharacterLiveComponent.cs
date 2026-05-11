@@ -12,11 +12,14 @@ namespace OmniumLessons
         private float _health;
 
         public bool IsAlive => Health > 0;
-        public float MaxHealth => _characterOwner.CharacterData.MaxHealth;
+
+        public float MaxHealth =>
+            _characterOwner.CharacterData.MaxHealth;
 
         public float Health
         {
             get => _health;
+
             private set
             {
                 _health = value;
@@ -46,14 +49,22 @@ namespace OmniumLessons
             if (damage <= 0f)
                 return;
 
-            // 🔹 НЕУЯЗВИМОСТЬ (Phase Shift)
+            // PLAYER INVULNERABILITY
+            PlayerCharacter player =
+                _characterOwner as PlayerCharacter;
+
+            if (player != null)
+            {
+                if (player.IsInvulnerable)
+                    return;
+            }
+
+            // STATUS EFFECT INVULNERABILITY
             if (_characterOwner != null &&
                 _characterOwner.StatusEffectController != null &&
-                _characterOwner.StatusEffectController.HasEffect<InvulnerabilityEffect>())
+                _characterOwner.StatusEffectController
+                    .HasEffect<InvulnerabilityEffect>())
             {
-                // можно добавить визуал/лог при желании
-                // Debug.Log($"{_characterOwner.name} is INVULNERABLE");
-
                 return;
             }
 
@@ -61,21 +72,29 @@ namespace OmniumLessons
 
             OnCharacterHealthChange?.Invoke(_characterOwner);
 
-            Debug.Log($"{_characterOwner.name} get damage by {damage}. Health: {Health}/{MaxHealth}");
+            Debug.Log(
+                $"{_characterOwner.name} get damage by {damage}. " +
+                $"Health: {Health}/{MaxHealth}");
 
-            // 💥 если это игрок — сбрасываем серию "без урона"
-            if (_characterOwner.CharacterType == CharacterType.DefaultPlayer)
+            // PLAYER DAMAGE REGISTER
+            if (_characterOwner.CharacterType ==
+                CharacterType.DefaultPlayer)
             {
-                GameManager.Instance?.ResonanceManager?.RegisterPlayerDamaged();
+                GameManager.Instance?
+                    .ResonanceManager?
+                    .RegisterPlayerDamaged();
             }
         }
 
         private void SetDeath()
         {
-            // 💥 если это враг — начисляем resonance
-            if (_characterOwner.CharacterType != CharacterType.DefaultPlayer)
+            // ENEMY KILLED REGISTER
+            if (_characterOwner.CharacterType !=
+                CharacterType.DefaultPlayer)
             {
-                GameManager.Instance?.ResonanceManager?.RegisterEnemyKilled(_characterOwner);
+                GameManager.Instance?
+                    .ResonanceManager?
+                    .RegisterEnemyKilled(_characterOwner);
             }
 
             OnCharacterDeath?.Invoke(_characterOwner);

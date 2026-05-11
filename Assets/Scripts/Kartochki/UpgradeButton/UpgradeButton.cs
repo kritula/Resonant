@@ -32,7 +32,6 @@ namespace OmniumLessons
         private Color _targetColor;
         private Vector3 _targetScale;
 
-        private bool _isHovered;
 
         private void Awake()
         {
@@ -135,14 +134,12 @@ namespace OmniumLessons
             if (_offer == null || !_offer.IsAvailable)
                 return;
 
-            _isHovered = true;
             _targetScale = _defaultScale * hoverScale;
             _targetColor = hoverColor;
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            _isHovered = false;
             _targetScale = _defaultScale;
             _targetColor = _defaultCardColor;
         }

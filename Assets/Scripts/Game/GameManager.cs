@@ -9,6 +9,7 @@ namespace OmniumLessons
         [SerializeField] private GameData _gameData;
         [SerializeField] private WindowsService _windowsService;
         [SerializeField] private UpgradeDatabase _abilityDatabase;
+        [SerializeField] private ExperiencePickupSpawner _experiencePickupSpawner;
 
         [Header("Boss")]
         [SerializeField] private CharacterType _bossCharacterType = CharacterType.Boss_Null_Core;
@@ -66,7 +67,7 @@ namespace OmniumLessons
 
             _characterDeathService = new CharacterDeathService(
                 _characterFactory,
-                ExperienceManager,
+                _experiencePickupSpawner,
                 _windowsService,
                 GameOver,
                 GameVictory);
@@ -84,7 +85,7 @@ namespace OmniumLessons
             ExperienceManager.StartGame();
 
             Character player = CharacterFactory.CreateCharacter(CharacterType.DefaultPlayer);
-            player.transform.position = Vector3.zero;
+            player.transform.position = new Vector3(0f, 1.5f, 0f);
 
             CharacterController controller = player.CharacterData != null
                 ? player.CharacterData.CharacterController
@@ -235,6 +236,11 @@ namespace OmniumLessons
             if (HexGridManager != null)
             {
                 HexGridManager.ResetGrid();
+            }
+
+            if (_experiencePickupSpawner != null)
+            {
+                _experiencePickupSpawner.ClearAll();
             }
 
             CharacterFactory.ClearAll();

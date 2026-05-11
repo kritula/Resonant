@@ -18,8 +18,10 @@ namespace OmniumLessons
             if (_liveComponent != null)
                 _liveComponent.OnCharacterHealthChange -= OnHealthChanged;
 
-            _liveComponent = character.LiveComponent;
+            if (character == null || character.LiveComponent == null)
+                return;
 
+            _liveComponent = character.LiveComponent;
             _liveComponent.OnCharacterHealthChange += OnHealthChanged;
 
             Hide();
@@ -28,6 +30,9 @@ namespace OmniumLessons
 
         private void Update()
         {
+            if (_canvas == null)
+                return;
+
             if (_canvas.gameObject.activeSelf)
             {
                 _hideTimer -= Time.deltaTime;
@@ -45,6 +50,9 @@ namespace OmniumLessons
         private void OnHealthChanged(Character character)
         {
             UpdateSlider();
+
+            if (_liveComponent == null)
+                return;
 
             if (_liveComponent.Health <= 0f)
             {
@@ -65,6 +73,9 @@ namespace OmniumLessons
 
         private void Show()
         {
+            if (_canvas == null)
+                return;
+
             _hideTimer = _visibleTime;
             _canvas.gameObject.SetActive(true);
         }
@@ -77,13 +88,12 @@ namespace OmniumLessons
                 _canvas.gameObject.SetActive(false);
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             if (_liveComponent != null)
                 _liveComponent.OnCharacterHealthChange -= OnHealthChanged;
 
             _liveComponent = null;
-            Hide();
         }
     }
 }

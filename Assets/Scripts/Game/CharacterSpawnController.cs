@@ -203,8 +203,11 @@ namespace OmniumLessons
             if (CharacterFactory.Player == null)
                 return;
 
-            Character enemy = CharacterFactory.CreateCharacter(enemyType);
             Vector3 spawnPoint = GetSpawnPointOutsideCamera();
+
+            Character enemy = CharacterFactory.CreateCharacter(enemyType);
+
+            enemy.gameObject.SetActive(false);
 
             CharacterController controller = enemy.CharacterData.CharacterController;
             if (controller != null)
@@ -219,6 +222,7 @@ namespace OmniumLessons
                 controller.enabled = true;
 
             GameManager.Instance.RegisterCharacter(enemy);
+
             enemy.gameObject.SetActive(true);
         }
 
@@ -229,7 +233,7 @@ namespace OmniumLessons
             if (camera == null)
             {
                 Debug.LogWarning("CharacterSpawnController: Camera.main not found.");
-                return Vector3.zero;
+                return CharacterFactory.Player.transform.position + new Vector3(20f, 1.5f, 20f);
             }
 
             if (!TryGetCameraGroundBounds(camera, out float minX, out float maxX, out float minZ, out float maxZ))
@@ -241,7 +245,7 @@ namespace OmniumLessons
             float offsetMin = GameData.MinEnemySpawnOffset;
             float offsetMax = GameData.MaxEnemySpawnOffset;
 
-            float spawnY = 1f;
+            float spawnY = 1.5f;
             int side = Random.Range(0, 4);
 
             switch (side)
@@ -276,9 +280,7 @@ namespace OmniumLessons
         {
             minX = maxX = minZ = maxZ = 0f;
 
-            float groundY = CharacterFactory.Player != null
-                ? CharacterFactory.Player.transform.position.y
-                : 0f;
+            float groundY = 0f;
 
             if (!TryGetGroundPointFromViewport(camera, new Vector3(0f, 0f, 0f), groundY, out Vector3 leftBottom))
                 return false;

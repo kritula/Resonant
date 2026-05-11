@@ -37,28 +37,5 @@ namespace OmniumLessons
             characterData.CharacterController.Move(direction * Speed * Time.deltaTime);
         }
 
-        public void Rotation(Vector3 direction)
-        {
-            if (direction == Vector3.zero)
-                return;
-
-            direction.y = 0f;
-
-            if (direction.sqrMagnitude <= 0.0001f)
-                return;
-
-            direction.Normalize();
-
-            float rotationSmoothTime = 0.1f;
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-
-            float angle = Mathf.SmoothDampAngle(
-                characterData.CharacterTransform.eulerAngles.y,
-                targetAngle,
-                ref _rotationVelocity,
-                rotationSmoothTime);
-
-            characterData.CharacterTransform.rotation = Quaternion.Euler(0f, angle, 0f);
-        }
     }
 }

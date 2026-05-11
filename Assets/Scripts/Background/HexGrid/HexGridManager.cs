@@ -8,6 +8,7 @@ namespace OmniumLessons
         [Header("References")]
         [SerializeField] private HexCellView _hexCellPrefab;
         [SerializeField] private Transform _target;
+        [SerializeField] private ActiveHexZoneManager _activeZoneManager;
 
         [Header("Grid Size")]
         [SerializeField] private int _columns = 25;
@@ -30,6 +31,8 @@ namespace OmniumLessons
         private HexCoord _currentCenterCoord;
         private bool _isInitialized;
 
+        public List<HexCellView> SpawnedCells => _spawnedCells;
+
         public void Initialize(Transform target)
         {
             _target = target;
@@ -44,6 +47,12 @@ namespace OmniumLessons
 
             CreateInitialCells();
             _isInitialized = true;
+
+            if (_activeZoneManager == null)
+                _activeZoneManager = GetComponent<ActiveHexZoneManager>();
+
+            if (_activeZoneManager != null)
+                _activeZoneManager.Initialize(this);
         }
 
         public void ResetGrid()
@@ -51,6 +60,9 @@ namespace OmniumLessons
             _isInitialized = false;
             _target = null;
             _currentCenterCoord = new HexCoord(0, 0);
+
+            if (_activeZoneManager != null)
+                _activeZoneManager.ResetZones();
 
             ClearGrid();
         }
@@ -131,6 +143,8 @@ namespace OmniumLessons
                 _activeCellsByCoord.Remove(oldCoord);
 
                 Vector3 worldPosition = GetWorldPosition(newCoord);
+                if (_activeZoneManager != null)
+                    _activeZoneManager.OnCellReused(cell);
                 cell.UpdateCell(newCoord, worldPosition);
 
                 _activeCellsByCoord[newCoord] = cell;

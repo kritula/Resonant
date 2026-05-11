@@ -5,7 +5,7 @@ namespace OmniumLessons
     public class CharacterDeathService
     {
         private readonly CharacterFactory _characterFactory;
-        private readonly ExperienceManager _experienceManager;
+        private readonly ExperiencePickupSpawner _experiencePickupSpawner;
         private readonly WindowsService _windowsService;
 
         private readonly System.Action _onGameOver;
@@ -13,13 +13,13 @@ namespace OmniumLessons
 
         public CharacterDeathService(
             CharacterFactory characterFactory,
-            ExperienceManager experienceManager,
+            ExperiencePickupSpawner experiencePickupSpawner,
             WindowsService windowsService,
             System.Action onGameOver,
             System.Action onGameVictory)
         {
             _characterFactory = characterFactory;
-            _experienceManager = experienceManager;
+            _experiencePickupSpawner = experiencePickupSpawner;
             _windowsService = windowsService;
             _onGameOver = onGameOver;
             _onGameVictory = onGameVictory;
@@ -51,20 +51,20 @@ namespace OmniumLessons
 
         private void OnCharacterDeathHandler(Character deathCharacter)
         {
+            if (deathCharacter == null)
+                return;
+
             Debug.Log("character " + deathCharacter.gameObject.name + " is dead");
 
             switch (deathCharacter.CharacterType)
             {
                 case CharacterType.DefaultPlayer:
-                    // GameOver НЕ вызываем сразу.
-                    // Ждём окончания Death-анимации через Animation Event.
                     break;
 
                 case CharacterType.DefaultEnemy:
                 case CharacterType.FastEnemy:
                 case CharacterType.TankEnemy:
-                    _experienceManager.AddExperience(deathCharacter.CharacterData.ExperienceReward);
-                    Debug.Log("Exp = " + _experienceManager.CurrentExperience);
+                    SpawnExperienceFromEnemy(deathCharacter);
                     break;
 
                 case CharacterType.Boss_Null_Core:
@@ -83,6 +83,27 @@ namespace OmniumLessons
 
             if (controller != null)
                 controller.enabled = false;
+        }
+
+        private void SpawnExperienceFromEnemy(Character enemy)
+        {
+            if (enemy == null)
+                return;
+
+            if (enemy.CharacterData == null)
+                return;
+
+            if (_experiencePickupSpawner == null)
+            {
+                Debug.LogWarning("CharacterDeathService: ExperiencePickupSpawner is not assigned.");
+                return;
+            }
+
+            int experienceReward = enemy.CharacterData.ExperienceReward;
+
+            _experiencePickupSpawner.SpawnExperiencePickup(
+                enemy.transform.position,
+                experienceReward);
         }
     }
 }

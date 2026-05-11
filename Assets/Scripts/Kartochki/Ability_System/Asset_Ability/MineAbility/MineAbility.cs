@@ -89,7 +89,7 @@ namespace OmniumLessons
         {
             Vector3 direction = GetSpawnDirection();
             Vector3 spawnPosition = _owner.transform.position + direction * _spawnDistance;
-            spawnPosition.y = 0f;
+            spawnPosition.y = 0.5f;
 
             MineObject mine = Object.Instantiate(_data.MinePrefab, spawnPosition, Quaternion.identity);
 
