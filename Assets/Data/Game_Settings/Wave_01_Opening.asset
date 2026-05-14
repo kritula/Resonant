@@ -15,13 +15,13 @@ MonoBehaviour:
   _waveName: Opening
   _startTimeSeconds: 0
   _endTimeSeconds: 45
-  _minimumAliveEnemies: 10
-  _maximumAliveEnemies: 22
-  _spawnInterval: 1.1
+  _minimumAliveEnemies: 6
+  _maximumAliveEnemies: 14
+  _spawnInterval: 1.25
   _spawnPerTick: 1
   _useEmergencyFill: 1
-  _emergencyThreshold: 4
-  _emergencySpawnCount: 3
+  _emergencyThreshold: 3
+  _emergencySpawnCount: 2
   _useBurstSpawn: 0
   _burstInterval: 0
   _burstSpawnCount: 0

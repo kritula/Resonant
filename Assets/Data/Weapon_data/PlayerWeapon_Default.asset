@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: PlayerWeapon_Default
   m_EditorClassIdentifier: 
   _weaponName: PlayerWeapon_Default
-  _damage: 5
-  _attackDistance: 5
-  _attackCooldown: 1
+  _damage: 6
+  _attackDistance: 6.325
+  _attackCooldown: 0.85
   _projectilePrefab: {fileID: 3508602709418752320, guid: c1ddb225c7ccb2845944622a74d660f4, type: 3}
-  _projectileSpeed: 10
-  _projectileLifeTime: 3
+  _projectileSpeed: 16
+  _projectileLifeTime: 1.6
   _projectileSpawnHeight: 1
   _ricochetRadius: 5
   _projectileSpawnOffset: 0.5

@@ -21,7 +21,7 @@ MonoBehaviour:
   _ringThickness: 1.1
   _gapAngle: 45
   _visualHeightOffset: 0.15
-  _damage: 10
+  _damage: 18
   _damageOnExpand: 1
   _damageOnContract: 1
   _segments: 100

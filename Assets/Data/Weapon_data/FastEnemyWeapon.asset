@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: FastEnemyWeapon
   m_EditorClassIdentifier: 
   _weaponName: FastEnemyWeapon
-  _damage: 10
-  _attackDistance: 1.5
-  _attackCooldown: 1
+  _damage: 4
+  _attackDistance: 2.2
+  _attackCooldown: 1.1

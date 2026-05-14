@@ -125,13 +125,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b8f6c14a74a29c4c89373b08cd4a6b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultSpeed: 5
+  _defaultSpeed: 4.18
   _characterController: {fileID: 4122229871219812238}
   _characterTransform: {fileID: 3007017196735004018}
   _weaponData: {fileID: 11400000, guid: c848d20648b65ff4aaf01b350c045916, type: 2}
-  _maxHealth: 10
+  _maxHealth: 12
   _resonanceCost: 1
-  _experienceReward: 30
+  _experienceReward: 3
 --- !u!143 &4122229871219812238
 CharacterController:
   m_ObjectHideFlags: 0
@@ -151,8 +151,8 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.6
+  m_Height: 3
+  m_Radius: 0.75
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -193,7 +193,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 2, z: 1}
+  m_Size: {x: 1.5, y: 3, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1266620514521131665
 MonoBehaviour:
@@ -322,7 +322,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.25}
+  m_AnchoredPosition: {x: 0, y: 1.424}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3990916283437300705

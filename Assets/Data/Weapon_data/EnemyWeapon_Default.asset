@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: EnemyWeapon_Default
   m_EditorClassIdentifier: 
   _weaponName: EnemyWeapon_Default
-  _damage: 5
-  _attackDistance: 2
-  _attackCooldown: 1
+  _damage: 6
+  _attackDistance: 2.3
+  _attackCooldown: 1.2

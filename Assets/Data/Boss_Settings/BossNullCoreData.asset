@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75356e1c6a3bdeb4d89557a587dbbf3b, type: 3}
   m_Name: BossNullCoreData
   m_EditorClassIdentifier: 
-  _maxHealth: 50
-  _moveSpeed: 2.5
+  _maxHealth: 450
+  _moveSpeed: 3.52
   _experienceReward: 100
   _pulseData: {fileID: 11400000, guid: 57adb49f2cbec3941ba4f0aa9c0fdb86, type: 2}
   _spawnData: {fileID: 11400000, guid: a4a8a7e7e6faeb04d8ea8ee1d270bddf, type: 2}

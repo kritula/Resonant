@@ -178,8 +178,8 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 2
-  m_Radius: 1
+  m_Height: 3
+  m_Radius: 1.5
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -197,13 +197,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b8f6c14a74a29c4c89373b08cd4a6b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultSpeed: 5
+  _defaultSpeed: 3.19
   _characterController: {fileID: 150044263052510878}
   _characterTransform: {fileID: 7657086876330706719}
   _weaponData: {fileID: 11400000, guid: cbb52d657de7a2e4ca69eb55be6605ea, type: 2}
-  _maxHealth: 15
-  _resonanceCost: 4
-  _experienceReward: 30
+  _maxHealth: 28
+  _resonanceCost: 2
+  _experienceReward: 6
 --- !u!114 &1978518390786399864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,7 +219,7 @@ MonoBehaviour:
   _characterData: {fileID: 2745321597979671313}
   _characterType: 4
   _deathAnimationDuration: 0.6
-  _healthBarView: {fileID: 0}
+  _healthBarView: {fileID: 7109312308470648599}
 --- !u!65 &4932695118441917961
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -239,7 +239,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 2, z: 1.0000002}
+  m_Size: {x: 3, y: 3, z: 1.0000002}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7109312308470648599
 MonoBehaviour:
@@ -275,7 +275,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3914973048011737819
 RectTransform:
   m_ObjectHideFlags: 0
@@ -293,7 +293,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.25}
+  m_AnchoredPosition: {x: 0, y: 2.009}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3492639642127851377
@@ -392,7 +392,7 @@ RectTransform:
   m_Father: {fileID: 2342089172422176576}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -704,7 +704,7 @@ RectTransform:
   m_Father: {fileID: 6008785808351625830}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e15d26f624bf6848a6a8d22593bca5c, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f7c8e01c2a241c4a8f31ad87b5e0c11, type: 3}
   m_Name: ResonanceZoneData
   m_EditorClassIdentifier: 
   ZoneType: 1
@@ -17,14 +17,10 @@ MonoBehaviour:
   Lifetime: 30
   MinRespawnDelay: 1
   MaxRespawnDelay: 1
-  ResonanceReadyMaterial: {fileID: 2100000, guid: 68895078c35d8d3489ef8659618571da, type: 2}
-  ResonanceActiveMaterial: {fileID: 2100000, guid: 142c9090c1a9490449f1fc64c15e1b3f, type: 2}
-  ResonanceActivationDuration: 8
-  MinDamageBonus: 0.1
-  MaxDamageBonus: 0.3
-  MinAttackSpeedBonus: 0.1
-  MaxAttackSpeedBonus: 0.25
-  CollapseCrackMaterial: {fileID: 0}
-  CollapseDelayAfterStep: 2
-  MinHoleLifetime: 5
-  MaxHoleLifetime: 8
+  ReadyMaterial: {fileID: 2100000, guid: 68895078c35d8d3489ef8659618571da, type: 2}
+  ActiveMaterial: {fileID: 2100000, guid: 142c9090c1a9490449f1fc64c15e1b3f, type: 2}
+  ActivationDuration: 8
+  MinDamageBonus: 0.2
+  MaxDamageBonus: 0.4
+  MinAttackSpeedBonus: 0.2
+  MaxAttackSpeedBonus: 0.4

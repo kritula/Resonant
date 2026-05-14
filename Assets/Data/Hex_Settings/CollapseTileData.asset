@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e15d26f624bf6848a6a8d22593bca5c, type: 3}
+  m_Script: {fileID: 11500000, guid: d07f4b2a9c4d47d5a5b981d6f80a6a6e, type: 3}
   m_Name: CollapseTileData
   m_EditorClassIdentifier: 
   ZoneType: 2
@@ -17,14 +17,8 @@ MonoBehaviour:
   Lifetime: 30
   MinRespawnDelay: 0
   MaxRespawnDelay: 0
-  ResonanceReadyMaterial: {fileID: 0}
-  ResonanceActiveMaterial: {fileID: 0}
-  ResonanceActivationDuration: 8
-  MinDamageBonus: 0.1
-  MaxDamageBonus: 0.3
-  MinAttackSpeedBonus: 0.1
-  MaxAttackSpeedBonus: 0.25
-  CollapseCrackMaterial: {fileID: 2100000, guid: 521aaa678d6368444b1c2e4ed9df1d20, type: 2}
-  CollapseDelayAfterStep: 2
+  ReadyMaterial: {fileID: 2100000, guid: 75efd96cd86e0344694f5ea18abaf000, type: 2}
+  CrackMaterial: {fileID: 2100000, guid: 521aaa678d6368444b1c2e4ed9df1d20, type: 2}
+  DelayAfterStep: 2
   MinHoleLifetime: 5
   MaxHoleLifetime: 8

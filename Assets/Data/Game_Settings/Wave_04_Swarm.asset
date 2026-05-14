@@ -15,20 +15,20 @@ MonoBehaviour:
   _waveName: Swarm
   _startTimeSeconds: 150
   _endTimeSeconds: 240
-  _minimumAliveEnemies: 32
-  _maximumAliveEnemies: 52
-  _spawnInterval: 0.6
-  _spawnPerTick: 3
+  _minimumAliveEnemies: 28
+  _maximumAliveEnemies: 46
+  _spawnInterval: 0.75
+  _spawnPerTick: 2
   _useEmergencyFill: 1
-  _emergencyThreshold: 10
-  _emergencySpawnCount: 6
+  _emergencyThreshold: 9
+  _emergencySpawnCount: 5
   _useBurstSpawn: 1
-  _burstInterval: 8
-  _burstSpawnCount: 10
+  _burstInterval: 10
+  _burstSpawnCount: 8
   _enemies:
   - _characterType: 2
-    _weight: 5
+    _weight: 6
   - _characterType: 3
-    _weight: 7
+    _weight: 5
   - _characterType: 4
-    _weight: 3
+    _weight: 2

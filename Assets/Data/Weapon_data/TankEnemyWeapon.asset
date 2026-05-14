@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: TankEnemyWeapon
   m_EditorClassIdentifier: 
   _weaponName: TankEnemyWeapon
-  _damage: 7
-  _attackDistance: 1.5
-  _attackCooldown: 1
+  _damage: 14
+  _attackDistance: 2.25
+  _attackCooldown: 1.6

@@ -66,8 +66,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aa87d5c2d3aa8140a2097d372504fa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damagePercentFromMaxHealth: 0.5
+  _damagePercentFromCurrentHealth: 0.5
   _pushDistance: 4
+  _damageCooldown: 1.5
   _invulnerabilityTime: 1.5
 --- !u!1 &5148256646848440969
 GameObject:
@@ -117,9 +118,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 644495a7b01fdd248b6e9c17089f8279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _resonanceRenderer: {fileID: 0}
-  _resonanceTrigger: {fileID: 0}
-  _collapseHoleTrigger: {fileID: 0}
+  _resonanceRenderer: {fileID: 3676856379662064794}
+  _resonanceTrigger: {fileID: 2740357944052198436}
+  _collapseHoleTrigger: {fileID: 5281229147153069202}
 --- !u!23 &3676856379662064794
 MeshRenderer:
   m_ObjectHideFlags: 0

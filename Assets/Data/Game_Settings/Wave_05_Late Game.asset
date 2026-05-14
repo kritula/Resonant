@@ -15,20 +15,20 @@ MonoBehaviour:
   _waveName: Late Game
   _startTimeSeconds: 240
   _endTimeSeconds: 9999
-  _minimumAliveEnemies: 40
-  _maximumAliveEnemies: 65
-  _spawnInterval: 0.45
+  _minimumAliveEnemies: 36
+  _maximumAliveEnemies: 58
+  _spawnInterval: 0.65
   _spawnPerTick: 3
   _useEmergencyFill: 1
-  _emergencyThreshold: 12
-  _emergencySpawnCount: 8
+  _emergencyThreshold: 11
+  _emergencySpawnCount: 6
   _useBurstSpawn: 1
-  _burstInterval: 6
-  _burstSpawnCount: 12
+  _burstInterval: 8
+  _burstSpawnCount: 10
   _enemies:
   - _characterType: 2
-    _weight: 4
-  - _characterType: 3
-    _weight: 8
-  - _characterType: 4
     _weight: 5
+  - _characterType: 3
+    _weight: 6
+  - _characterType: 4
+    _weight: 3

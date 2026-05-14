@@ -15,20 +15,20 @@ MonoBehaviour:
   _waveName: Mixed Pack
   _startTimeSeconds: 90
   _endTimeSeconds: 150
-  _minimumAliveEnemies: 24
-  _maximumAliveEnemies: 40
-  _spawnInterval: 0.75
+  _minimumAliveEnemies: 20
+  _maximumAliveEnemies: 34
+  _spawnInterval: 0.9
   _spawnPerTick: 2
   _useEmergencyFill: 1
-  _emergencyThreshold: 8
-  _emergencySpawnCount: 5
+  _emergencyThreshold: 7
+  _emergencySpawnCount: 4
   _useBurstSpawn: 1
-  _burstInterval: 10
-  _burstSpawnCount: 6
+  _burstInterval: 12
+  _burstSpawnCount: 5
   _enemies:
   - _characterType: 2
     _weight: 7
   - _characterType: 3
-    _weight: 5
+    _weight: 4
   - _characterType: 4
-    _weight: 2
+    _weight: 1

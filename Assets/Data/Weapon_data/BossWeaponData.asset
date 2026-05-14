@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: BossWeaponData
   m_EditorClassIdentifier: 
   _weaponName: Boss
-  _damage: 30
+  _damage: 18
   _attackDistance: 3
-  _attackCooldown: 1
+  _attackCooldown: 1.4

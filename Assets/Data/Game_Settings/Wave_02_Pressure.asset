@@ -15,18 +15,18 @@ MonoBehaviour:
   _waveName: Pressure Up
   _startTimeSeconds: 45
   _endTimeSeconds: 90
-  _minimumAliveEnemies: 16
-  _maximumAliveEnemies: 30
-  _spawnInterval: 0.9
+  _minimumAliveEnemies: 12
+  _maximumAliveEnemies: 24
+  _spawnInterval: 1
   _spawnPerTick: 2
   _useEmergencyFill: 1
-  _emergencyThreshold: 6
-  _emergencySpawnCount: 4
+  _emergencyThreshold: 5
+  _emergencySpawnCount: 3
   _useBurstSpawn: 0
   _burstInterval: 0
   _burstSpawnCount: 0
   _enemies:
   - _characterType: 2
-    _weight: 8
+    _weight: 9
   - _characterType: 3
-    _weight: 3
+    _weight: 2
